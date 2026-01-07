@@ -1,0 +1,27 @@
+# Build outputs
+out/
+**/out/
+**/*.o
+**/*.obj
+**/*.so
+**/*.dll
+**/*.exe
+**/*.a
+**/*.lib
+
+# Simulation results
+results/
+**/results/
+**/*.sca
+**/*.vec
+**/*.vci
+**/*.anf
+**/*.elog
+**/*.log
+
+# IDE / OS junk
+.DS_Store
+Thumbs.db
+
+# OMNeT++ generated makefiles (isteğe bağlı)
+**/Makefile
