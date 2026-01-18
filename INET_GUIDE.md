@@ -1,188 +1,1707 @@
-# INET Framework Mimarisi ve Genel Yapısı - Kapsamlı Kılavuz
+# INET Framework ve Ağ Temelleri - Kapsamlı Kılavuz
+
+> *Bu döküman, Network Teorisi ile INET Framework'ü birleştiren sistematik bir kılavuzdur.*
+> *INET Framework 4.5.4 sürümü için hazırlanmıştır.*
+
+---
 
 ## 📚 İçindekiler
 
-1. [INET Nedir?](#1-inet-nedir)
-2. [Temel Ağ Kavramları ve Terimler](#2-temel-ağ-kavramları-ve-terimler)
-3. [Katmanlı Mimari](#3-katmanlı-mimari)
-4. [Dizin Yapısı](#4-dizin-yapısı)
-5. [Time-Sensitive Networking (TSN)](#5-time-sensitive-networking-tsn)
-6. [TSN Mekanizmaları - Detaylı Açıklamalar](#6-tsn-mekanizmaları---detaylı-açıklamalar)
-7. [Paket Akış Senaryoları](#7-paket-akış-senaryoları)
-8. [Modül Tipleri](#8-modül-tipleri)
-9. [Paket İşleme Mekanizması](#9-paket-işleme-mekanizması)
-10. [Konfigürasyon Sistemi ve Kod Örnekleri](#10-konfigürasyon-sistemi-ve-kod-örnekleri)
-11. [Signal ve İstatistik Mekanizması](#11-signal-ve-istatistik-mekanizması)
+### BÖLÜM I: GİRİŞ VE TEMEL KAVRAMLAR
+1. [INET Framework Nedir?](#1-inet-framework-nedir)
+2. [İnternet Nedir?](#2-internet-nedir)
+3. [Protokol Kavramı](#3-protokol-kavramı)
+
+### BÖLÜM II: AĞ MİMARİSİ
+4. [Ağ Kenarı (Network Edge)](#4-ağ-kenarı-network-edge)
+5. [Ağ Çekirdeği (Network Core)](#5-ağ-çekirdeği-network-core)
+6. [Delay, Loss ve Throughput](#6-delay-loss-ve-throughput)
+
+### BÖLÜM III: KATMANLI MİMARİ
+7. [Protokol Katmanları ve Servis Modelleri](#7-protokol-katmanları-ve-servis-modelleri)
+8. [INET Dizin Yapısı](#8-inet-dizin-yapısı)
+
+### BÖLÜM IV: UYGULAMA KATMANI
+9. [Uygulama Katmanı Protokolleri](#9-uygulama-katmanı-protokolleri)
+
+### BÖLÜM V: TAŞIMA KATMANI
+10. [Taşıma Katmanı Temelleri](#10-taşıma-katmanı-temelleri)
+
+### BÖLÜM VI: AĞ KATMANI
+11. [Ağ Katmanı - Data Plane](#11-ağ-katmanı-data-plane)
+12. [Ağ Katmanı - Control Plane](#12-ağ-katmanı-control-plane)
+
+### BÖLÜM VII: VERİ BAĞLANTI KATMANI
+13. [Link Layer ve LAN'lar](#13-link-layer-ve-lanlar)
+
+### BÖLÜM VIII: KABLOSUZ AĞLAR
+14. [Kablosuz ve Mobil Ağlar](#14-kablosuz-ve-mobil-ağlar)
+
+### BÖLÜM IX: DETERMINISTIK AĞLAR (TSN)
+15. [Time-Sensitive Networking (TSN)](#15-time-sensitive-networking-tsn)
+16. [TSN Mekanizmaları - Detaylı](#16-tsn-mekanizmaları-detaylı)
+
+### BÖLÜM X: GELİŞMİŞ KONULAR
+17. [Paket Akış Senaryoları](#17-paket-akış-senaryoları)
+18. [Ağ Güvenliği](#18-ağ-güvenliği)
+19. [Multimedia ve QoS](#19-multimedia-ve-qos)
+
+### BÖLÜM XI: INET PRATİK
+20. [Modül Tipleri ve Konfigürasyon](#20-modül-tipleri-ve-konfigürasyon)
+21. [Signal ve İstatistik Mekanizması](#21-signal-ve-istatistik-mekanizması)
 
 ---
 
-## 1. INET Nedir?
+## 1. INET Framework Nedir?
 
-INET Framework, OMNeT++ simülasyon ortamı için geliştirilmiş açık kaynaklı bir ağ simülasyon kütüphanesidir. İnternet protokollerini (TCP, UDP, IP, Ethernet, WiFi, vb.) ve çeşitli ağ teknolojilerini simüle etmek için kullanılır.
+INET Framework, **OMNeT++ simülasyon ortamı** için geliştirilmiş açık kaynaklı bir ağ simülasyon kütüphanesidir. İnternet protokollerini ve çeşitli ağ teknolojilerini simüle etmek için kullanılır.
 
-### 1.1 Temel Özellikler
+### 1.1 INET'in Amacı
 
-| Özellik | Açıklama |
-|---------|----------|
-| **Modüler Yapı** | Her protokol ve işlev ayrı modüller halinde |
-| **Katmanlı Mimari** | OSI modeline benzer katman yapısı |
-| **Genişletilebilirlik** | Yeni protokoller kolayca eklenebilir |
-| **Gerçekçi Modeller** | Gerçek protokol davranışlarını taklit eder |
-| **TSN Desteği** | Time-Sensitive Networking standartları |
-| **Emülasyon** | Gerçek ağ arayüzleriyle entegrasyon |
+INET, ağ araştırmacıları ve mühendisleri için şu imkanları sunar:
 
-### 1.2 Desteklenen Protokoller
+| Kullanım Alanı | Açıklama | Örnek |
+|----------------|----------|-------|
+| **Protokol Geliştirme** | Yeni protokolleri test etme | Yeni congestion control algoritması |
+| **Performans Analizi** | Ağ performansını ölçme | Delay, throughput, packet loss |
+| **Ağ Tasarımı** | Topoloji ve konfigürasyon optimizasyonu | Kurumsal ağ planlaması |
+| **Eğitim** | Ağ kavramlarını öğrenme | Protokol davranışlarını görselleştirme |
 
-- **Ulaşım**: TCP, UDP, SCTP, RTP
-- **Ağ**: IPv4, IPv6, ARP, ICMP, OSPF, BGP, RIP
-- **Bağlantı**: Ethernet, IEEE 802.11, IEEE 802.1Q/R
-- **TSN**: IEEE 802.1AS, 802.1Qbv, 802.1Qav, 802.1CB, 802.1Qbu, 802.1Qci
+### 1.2 Temel Özellikler
+
+| Özellik | Açıklama | INET'te Karşılığı |
+|---------|----------|-------------------|
+| **Modüler Yapı** | Her protokol ayrı modül | `src/inet/` altındaki klasörler |
+| **Katmanlı Mimari** | OSI modeline benzer yapı | Application → Transport → Network → Link → Physical |
+| **Genişletilebilirlik** | Yeni protokoller eklenebilir | C++ inheritance, NED modülleri |
+| **Gerçekçi Modeller** | RFC uyumlu implementasyonlar | TCP Reno, OSPF, BGP |
+| **TSN Desteği** | Deterministik Ethernet | IEEE 802.1 standartları |
+
+### 1.3 Desteklenen Protokoller
+
+```
+INET Protokol Yığını:
+═══════════════════
+
+┌─────────────────────────────────────────────────────────────┐
+│  APPLICATION LAYER                                          │
+│  HTTP, FTP, Telnet, DNS, DHCP, VoIP, Video Streaming        │
+├─────────────────────────────────────────────────────────────┤
+│  TRANSPORT LAYER                                            │
+│  TCP (Reno, NewReno, Vegas, Westwood), UDP, SCTP, RTP       │
+├─────────────────────────────────────────────────────────────┤
+│  NETWORK LAYER                                              │
+│  IPv4, IPv6, ICMP, ARP, OSPF, BGP, RIP, MPLS                │
+├─────────────────────────────────────────────────────────────┤
+│  LINK LAYER                                                 │
+│  Ethernet, IEEE 802.11 (WiFi), IEEE 802.1Q (VLAN)           │
+│  TSN: 802.1AS, 802.1Qbv, 802.1Qav, 802.1CB, 802.1Qbu        │
+├─────────────────────────────────────────────────────────────┤
+│  PHYSICAL LAYER                                             │
+│  Wired (Ethernet PHY), Wireless (Radio models)              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 1.4 INET ve Gerçek Dünya Karşılaştırması
+
+| Gerçek Dünya | INET Karşılığı | Açıklama |
+|--------------|----------------|----------|
+| Bilgisayar | `StandardHost` | Tam protokol yığını |
+| Router | `Router` | IP routing, forwarding |
+| Ethernet Switch | `EthernetSwitch` | L2 switching, MAC learning |
+| WiFi Access Point | `AccessPoint` | 802.11 BSS |
+| Kablo | `DatarateChannel` | Delay, datarate, BER |
+| TSN Switch | `TsnSwitch` | Deterministik Ethernet |
 
 ---
 
-## 2. Temel Ağ Kavramları ve Terimler
+## 2. İnternet Nedir?
 
-### 2.1 Protokol Terimleri
+İnternet, dünya genelinde milyarlarca bilgisayar ve cihazı birbirine bağlayan devasa bir ağ altyapısıdır. Bu bölümde interneti iki farklı perspektiften inceleyeceğiz.
 
-Bu bölümde INET Framework ve ağ simülasyonlarında sıkça karşılaşılacak temel kavramları detaylı olarak açıklayacağız.
+### 2.1 Nuts-and-Bolts (Donanım) Perspektifi
 
-#### 2.1.1 Taşıma Katmanı Protokolleri
+Bu bakış açısı, internetin fiziksel ve yazılımsal bileşenlerine odaklanır.
 
-**TCP (Transmission Control Protocol)**
-- Bağlantı tabanlı, güvenilir veri iletimi sağlar
-- Akış kontrolü ve hata düzeltme mekanizmaları içerir
-- Paketlerin sıralı teslimatını garanti eder
-- Three-way handshake ile bağlantı kurar
+**Temel Bileşenler:**
 
-**UDP (User Datagram Protocol)**
-- Bağlantısız, hızlı veri iletimi sağlar
-- Güvenilirlik garantisi vermez
-- Düşük overhead nedeniyle gerçek zamanlı uygulamalarda tercih edilir
-- Video streaming, VoIP gibi uygulamalarda kullanılır
+```
+İnternet Bileşenleri ve INET Karşılıkları:
+══════════════════════════════════════════
 
-**SCTP (Stream Control Transmission Protocol)**
-- TCP ve UDP'nin avantajlarını birleştirir
-- Çoklu akış (multi-streaming) desteği sağlar
-- Her akış bağımsız olarak işlenir, bir akıştaki kayıp diğerlerini etkilemez
-- Çoklu yol (multi-homing) desteği ile yüksek kullanılabilirlik
-- Telekomünikasyon ve signaling protokollerinde yaygın kullanım
-- Mesaj odaklı iletim (message-oriented delivery)
+┌──────────────────┬────────────────────┬──────────────────────────────┐
+│   Gerçek Dünya   │    INET Modülü     │         Açıklama             │
+├──────────────────┼────────────────────┼──────────────────────────────┤
+│ End Systems      │ StandardHost       │ PC, sunucu, IoT cihazları    │
+│ (Hosts)          │ TsnDevice          │ TSN özellikli uç cihaz       │
+├──────────────────┼────────────────────┼──────────────────────────────┤
+│ Routers          │ Router             │ Paketleri yönlendirir        │
+├──────────────────┼────────────────────┼──────────────────────────────┤
+│ Switches         │ EthernetSwitch     │ L2 anahtarlama               │
+│                  │ TsnSwitch          │ Deterministik anahtarlama    │
+├──────────────────┼────────────────────┼──────────────────────────────┤
+│ Communication    │ DatarateChannel    │ Kablolu bağlantı             │
+│ Links            │ IdealWirelessChannel │ Kablosuz bağlantı          │
+├──────────────────┼────────────────────┼──────────────────────────────┤
+│ Network of       │ Network (NED)      │ Topoloji tanımı              │
+│ Networks         │                    │                              │
+└──────────────────┴────────────────────┴──────────────────────────────┘
+```
 
-**RTP (Real-time Transport Protocol)**
-- Ses ve video gibi gerçek zamanlı veri iletimi için tasarlanmıştır
-- Zaman damgası ve sıra numarası bilgisi taşır
-- Jitter düzeltme ve senkronizasyon için kullanılır
+**INET'te Basit İnternet Topolojisi:**
+```ned
+network SimpleInternet
+{
+    submodules:
+        client: StandardHost;    // End system (host)
+        server: StandardHost;    // End system (host)
+        router1: Router;         // Intermediate system
+        router2: Router;         // Intermediate system
+    connections:
+        client.pppg++ <--> Eth100M <--> router1.pppg++;
+        router1.pppg++ <--> Eth1G <--> router2.pppg++;
+        router2.pppg++ <--> Eth100M <--> server.pppg++;
+}
+```
 
-#### 2.1.2 Ağ Katmanı Kavramları
+### 2.2 Servis Perspektifi
 
-**IPv4 (Internet Protocol version 4)**
-- 32-bit adres alanı (örn: 192.168.1.1)
-- Yaklaşık 4.3 milyar benzersiz adres
-- Fragmentation ve routing desteği
-- TTL (Time To Live) mekanizması
+Bu bakış açısı, internetin uygulamalara sağladığı hizmetlere odaklanır.
 
-**IPv6 (Internet Protocol version 6)**
-- 128-bit adres alanı
-- Genişletilmiş başlık yapısı
-- Built-in güvenlik (IPSec)
-- Auto-configuration desteği
+**İnternet İki Ana Servis Sunar:**
 
-**ARP (Address Resolution Protocol)**
-- IP adreslerini MAC adreslerine çevirir
-- Layer 2 ve Layer 3 arasında köprü görevi görür
-- Broadcast tabanlı çözümleme
-- ARP cache ile performans optimizasyonu
+| Servis Tipi | Protokol | INET Modülü | Özellikler |
+|-------------|----------|-------------|------------|
+| **Connection-Oriented** | TCP | `Tcp` | Güvenilir, sıralı, akış kontrolü |
+| **Connectionless** | UDP | `Udp` | Hızlı, best-effort, multicast desteği |
 
-**ICMP (Internet Control Message Protocol)**
-- Ağ hata ve kontrol mesajları için kullanılır
-- Ping ve traceroute araçlarının temelini oluşturur
-- Echo request/reply, destination unreachable, time exceeded mesajları
+**INET'te Uygulama-Transport Etkileşimi:**
+```
+                    INET Socket API
+                    ════════════════
+┌─────────────────────────────────────────────────────────────────┐
+│                      UdpBasicApp / TcpApp                       │
+│                        (Application)                            │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │ Socket API (send, receive, connect)
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     Udp / Tcp Module                            │
+│                      (Transport Layer)                          │
+│  Sağlanan Servisler:                                            │
+│  • Multiplexing (port numaraları)                               │
+│  • Segmentation (TCP)                                           │
+│  • Reliable delivery (TCP)                                      │
+│  • Flow control (TCP)                                           │
+│  • Congestion control (TCP)                                     │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-**OSPF (Open Shortest Path First)**
-- Link-state routing protokolü
-- Dijkstra algoritması ile en kısa yol hesaplaması
-- Hiyerarşik yapı (Area konsepti)
-- Hızlı konverjans
+---
 
-**BGP (Border Gateway Protocol)**
-- Internet'in omurgasını oluşturan routing protokolü
-- Autonomous System'ler arası routing
-- Path-vector protokolü
-- Policy-based routing desteği
+## 3. Protokol Kavramı
 
-**RIP (Routing Information Protocol)**
-- Distance-vector routing protokolü
-- Hop count metriği kullanır
-- Maksimum 15 hop sınırı
-- Basit konfigürasyon
+### 3.1 Protokol Nedir?
 
-#### 2.1.3 Veri Bağlantı Katmanı Kavramları
+Protokol, iki veya daha fazla iletişim kuran varlık arasındaki mesaj formatını ve mesaj alışveriş kurallarını tanımlayan bir standarttır.
 
-**MAC Adresi (Media Access Control Address)**
-- 48-bit fiziksel adres (örn: 00:1A:2B:3C:4D:5E)
-- İlk 24 bit: OUI (Organizationally Unique Identifier) - Üretici kodu
-- Son 24 bit: Cihaza özgü tanımlayıcı
-- Globally unique (dünya genelinde benzersiz)
-- Unicast, Multicast ve Broadcast adresleri
+**Protokolün Temel Unsurları:**
+1. **Sözdizimi (Syntax)**: Mesaj formatı, alan boyutları
+2. **Anlambilim (Semantics)**: Her alanın anlamı
+3. **Zamanlama (Timing)**: Mesajların ne zaman gönderileceği
 
-**FCS (Frame Check Sequence)**
-- Ethernet çerçevesinin sonunda yer alan 32-bit CRC (Cyclic Redundancy Check) değeri
-- Veri bütünlüğünü doğrulamak için kullanılır
-- İletim sırasında oluşabilecek bit hatalarını tespit eder
-- CRC-32 polinomu: `x^32 + x^26 + x^23 + x^22 + x^16 + x^12 + x^11 + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1`
-- Hatalı çerçeveler drop edilir ve üst katmanlara iletilmez
-- 4 byte boyutunda
+### 3.2 Protokol Örneği: TCP Three-Way Handshake
 
-**Interframe Gap (IFG)**
-- Ethernet çerçeveleri arasındaki minimum boşluk
-- 96 bit time (12 byte) süresince beklenilir
-- 100 Mbps'te: 0.96 µs
-- 1 Gbps'te: 96 ns
-- 10 Gbps'te: 9.6 ns
-- Ağ cihazlarının çerçeveleri işlemesi için gerekli zaman
+```
+TCP Bağlantı Kurulumu (INET'te TcpConnection modülü):
+═══════════════════════════════════════════════════
 
-**Preamble ve SFD (Start Frame Delimiter)**
-- Preamble: 7 byte, `10101010` paterni - saat senkronizasyonu için
-- SFD: 1 byte, `10101011` - çerçevenin başladığını belirtir
-- Toplam 8 byte
-- Fiziksel katman senkronizasyonu sağlar
+    Client (TcpApp)                              Server (TcpApp)
+         │                                            │
+         │──────────── SYN (seq=x) ──────────────────▶│
+         │           "Bağlantı kurmak istiyorum"       │
+         │                                            │
+         │◀─────── SYN-ACK (seq=y, ack=x+1) ─────────│
+         │           "Tamam, ben de hazırım"          │
+         │                                            │
+         │──────────── ACK (ack=y+1) ─────────────────▶│
+         │           "Bağlantı kuruldu"               │
+         │                                            │
+         │◀════════ Veri transferi başlar ═══════════▶│
+```
 
-#### 2.1.4 VLAN ve Ethernet Tipleri
+**INET'te TCP Bağlantısı:**
+```cpp
+// INET TcpConnection sınıfından
+void TcpConnection::process_RCV_SEGMENT(TcpHeader *tcpHeader) {
+    switch (fsm.getState()) {
+        case TCP_S_LISTEN:
+            // SYN alındı, SYN-ACK gönder
+            if (tcpHeader->getSynBit()) {
+                sendSynAck();
+                fsm.setState(TCP_S_SYN_RCVD);
+            }
+            break;
+        // ...diğer durumlar
+    }
+}
+```
 
-**VLAN (Virtual Local Area Network)**
-- Layer 2 seviyesinde ağ segmentasyonu
-- Broadcast domain'lerini ayırır
-- 12-bit VLAN ID (0-4095 arası)
-- VLAN 0: Priority tagging
-- VLAN 1: Default VLAN
-- VLAN 4095: Reserved
+### 3.3 Protokol Standartları ve RFC'ler
 
-**C-TAG (Customer TAG - IEEE 802.1Q)**
+| Protokol | RFC | INET Dosyası |
+|----------|-----|--------------|
+| TCP | RFC 793 | `src/inet/transportlayer/tcp/` |
+| UDP | RFC 768 | `src/inet/transportlayer/udp/` |
+| IPv4 | RFC 791 | `src/inet/networklayer/ipv4/` |
+| ICMP | RFC 792 | `src/inet/networklayer/ipv4/Icmp.cc` |
+| ARP | RFC 826 | `src/inet/networklayer/arp/` |
+| OSPF | RFC 2328 | `src/inet/routing/ospfv2/` |
+| BGP | RFC 4271 | `src/inet/routing/bgpv4/` |
+
+---
+
+## 4. Ağ Kenarı (Network Edge)
+
+Ağ kenarı, son kullanıcı cihazlarını (host'ları) ve onların ağa erişim yöntemlerini kapsar.
+
+### 4.1 End Systems (Host'lar)
+
+Host'lar, ağ uygulamalarını çalıştıran cihazlardır.
+
+**INET Host Modülleri:**
+
+| Modül | Kullanım | Özellikler |
+|-------|----------|------------|
+| `StandardHost` | Genel amaçlı host | Tam protokol yığını |
+| `WirelessHost` | Kablosuz cihaz | 802.11 desteği |
+| `TsnDevice` | TSN end station | Deterministik iletişim |
+| `AdhocHost` | Ad-hoc ağlar | Routing desteği |
+
+**StandardHost İç Yapısı:**
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        StandardHost                             │
+├─────────────────────────────────────────────────────────────────┤
+│   ┌─────────────┐                                               │
+│   │  app[0..n]  │ ← UdpBasicApp, TcpApp, PingApp                │
+│   └──────┬──────┘                                               │
+│          │                                                      │
+│   ┌──────▼──────┐                                               │
+│   │   udp/tcp   │ ← Transport layer                             │
+│   └──────┬──────┘                                               │
+│          │                                                      │
+│   ┌──────▼──────┐                                               │
+│   │   ipv4/ipv6 │ ← Network layer (routing table dahil)         │
+│   └──────┬──────┘                                               │
+│          │                                                      │
+│   ┌──────▼──────┐                                               │
+│   │  eth[0..n]  │ ← Ethernet interfaces                         │
+│   └─────────────┘                                               │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 4.2 Access Networks (Erişim Ağları)
+
+Erişim ağı, end system'leri ilk router'a (edge router) bağlayan ağdır.
+
+**INET'te Desteklenen Erişim Teknolojileri:**
+
+| Teknoloji | INET Desteği | Modül/Klasör |
+|-----------|--------------|--------------|
+| Ethernet (LAN) | ✅ Tam | `linklayer/ethernet/` |
+| WiFi (WLAN) | ✅ Tam | `linklayer/ieee80211/` |
+| Point-to-Point | ✅ Tam | `linklayer/ppp/` |
+| DSL | ⚠️ Kısmi | Channel parametreleri ile |
+| Cellular (LTE) | ⚠️ Kısmi | Simu5G eklentisi |
+
+### 4.3 Physical Media (Fiziksel Ortam)
+
+**INET'te Fiziksel Ortam Modelleme:**
+
+```ini
+# Kablolu Bağlantı (Ethernet)
+**.channel.datarate = 100Mbps    # Bant genişliği
+**.channel.delay = 10us          # Propagation delay
+**.channel.ber = 0               # Bit Error Rate
+
+# Kablosuz Bağlantı (802.11)
+**.radio.transmitter.power = 20mW
+**.radio.receiver.sensitivity = -85dBm
+**.radioMedium.pathLoss.typename = "FreeSpacePathLoss"
+```
+
+**Fiziksel Ortam Türleri ve INET Karşılıkları:**
+
+| Ortam | INET Modeli | Parametreler |
+|-------|-------------|--------------|
+| Twisted Pair (Cat5/6) | `DatarateChannel` | 100Mbps - 10Gbps |
+| Fiber Optik | `DatarateChannel` | Düşük delay, yüksek bw |
+| Coaxial | `DatarateChannel` | Eski teknoloji |
+| Radio (WiFi) | `Ieee80211Radio` | 2.4/5 GHz bands |
+| Radio (Cellular) | `UnitDiskRadio` | Basitleştirilmiş model |
+
+---
+
+## 5. Ağ Çekirdeği (Network Core)
+
+Ağ çekirdeği, paketleri kaynak host'tan hedef host'a ileten router'lar ve linklerden oluşan ağ mesh'idir.
+
+### 5.1 Packet Switching (Paket Anahtarlama)
+
+Modern internet, **packet switching** prensibiyle çalışır.
+
+**Store-and-Forward Mekanizması:**
+
+```
+Store-and-Forward İletim:
+═════════════════════════
+
+Source                Router                 Destination
+  │                     │                         │
+  │   ┌──────────┐      │                         │
+  │   │ Packet   │────▶│ 1. Paketi al (store)    │
+  │   └──────────┘      │                         │
+  │                     │ 2. Hata kontrolü        │
+  │                     │ 3. Routing kararı       │
+  │                     │ 4. İlet (forward)       │
+  │                     │   ┌──────────┐          │
+  │                     │───│ Packet   │────────▶│
+  │                     │   └──────────┘          │
+```
+
+**INET'te Packet Switching:**
+
+INET'te tüm router'lar store-and-forward prensibiyle çalışır:
+
+```cpp
+// Ipv4 modülünde routing kararı
+void Ipv4::routePacket(Packet *packet) {
+    const auto& ipv4Header = packet->peekAtFront<Ipv4Header>();
+    Ipv4Address destAddr = ipv4Header->getDestAddress();
+    
+    // Routing table lookup
+    const Ipv4Route *route = rt->findBestMatchingRoute(destAddr);
+    
+    if (route != nullptr) {
+        // Forward to next hop
+        sendToNetworkInterface(packet, route->getInterface(), route->getGateway());
+    } else {
+        // Drop packet, send ICMP unreachable
+        sendIcmpError(packet, ICMP_DESTINATION_UNREACHABLE);
+    }
+}
+```
+
+**TSN'de Packet Switching İyileştirmeleri:**
+
+TSN, geleneksel packet switching'e deterministik özellikler ekler:
+
+| Özellik | Geleneksel | TSN |
+|---------|------------|-----|
+| Kuyruk Yönetimi | FIFO | Priority + TAS |
+| Gecikme | Değişken | Sınırlı (bounded) |
+| Jitter | Yüksek | Düşük |
+| Güvenilirlik | Best-effort | FRER ile yedekli |
+
+### 5.2 Circuit Switching vs Packet Switching
+
+**Karşılaştırma:**
+
+| Özellik | Circuit Switching | Packet Switching |
+|---------|-------------------|------------------|
+| Bağlantı | Dedicated path | Shared links |
+| Kaynak Kullanımı | Sabit, ayrılmış | Dinamik, paylaşımlı |
+| Gecikme | Sabit | Değişken |
+| Örnek | Eski telefon ağları | İnternet |
+| INET Analojisi | TAS (zaman dilimleri) | Standard routing |
+
+**TSN TAS - Circuit Switching Benzerliği:**
+
+TAS (Time-Aware Shaper), packet switching ağında circuit switching benzeri garantiler sağlar:
+
+```
+TAS Time Slots (Circuit Switching Analojisi):
+═════════════════════════════════════════════
+
+Zaman  ──────────────────────────────────────────────▶
+
+       │ Slot 0  │ Slot 1  │ Slot 0  │ Slot 1  │
+       ├─────────┼─────────┼─────────┼─────────┤
+       │ TC7     │ TC0     │ TC7     │ TC0     │
+       │(Control)│ (BE)    │(Control)│ (BE)    │
+       └─────────┴─────────┴─────────┴─────────┘
+
+TC7: Kontrol trafiği - Garantili zaman dilimi (circuit-like)
+TC0: Best-effort   - Kalan zaman (packet switching)
+```
+
+### 5.3 A Network of Networks
+
+İnternet, birbiriyle bağlantılı ağların (ISP'lerin) hiyerarşik yapısıdır.
+
+**INET'te Multi-AS Topoloji:**
+
+```ned
+network InternetTopology
+{
+    submodules:
+        // ISP 1 (AS 100)
+        isp1Router1: Router { @display("i=abstract/router"); }
+        isp1Router2: Router;
+        
+        // ISP 2 (AS 200)
+        isp2Router1: Router;
+        isp2Router2: Router;
+        
+        // IXP (Internet Exchange Point)
+        ixpSwitch: EthernetSwitch;
+        
+    connections:
+        // Intra-AS links (OSPF)
+        isp1Router1.pppg++ <--> Eth1G <--> isp1Router2.pppg++;
+        isp2Router1.pppg++ <--> Eth1G <--> isp2Router2.pppg++;
+        
+        // Inter-AS links (BGP) via IXP
+        isp1Router2.ethg++ <--> Eth10G <--> ixpSwitch.ethg++;
+        isp2Router1.ethg++ <--> Eth10G <--> ixpSwitch.ethg++;
+}
+```
+
+---
+
+## 6. Delay, Loss ve Throughput
+
+Bu bölümde paket anahtarlamalı ağlardaki performans metriklerini ve INET'te nasıl ölçüldüklerini inceleyeceğiz.
+
+### 6.1 Delay Türleri
+
+Toplam uçtan uca gecikme dört bileşenden oluşur:
+
+```
+d_total = d_proc + d_queue + d_trans + d_prop
+```
+
+**Delay Bileşenleri:**
+
+| Delay | Formül | INET'te | Açıklama |
+|-------|--------|---------|----------|
+| **Processing (d_proc)** | Sabit | `ProcessingDelayLayer` | Header inceleme, routing kararı |
+| **Queueing (d_queue)** | Değişken | `PacketQueue` | Kuyrukta bekleme |
+| **Transmission (d_trans)** | L/R | `channel.datarate` | Paketi kabloya koyma |
+| **Propagation (d_prop)** | d/s | `channel.delay` | Sinyalin fiziksel ilerlemesi |
+
+**INET'te Delay Hesaplama:**
+
+```
+Örnek Senaryo:
+═════════════
+Paket boyutu (L): 1500 bytes = 12000 bits
+Link hızı (R): 100 Mbps
+Link uzunluğu (d): 2000 km
+Propagation speed (s): 2×10⁸ m/s
+Processing delay: 1 µs
+
+Hesaplamalar:
+  d_trans = L/R = 12000 / 100×10⁶ = 120 µs
+  d_prop  = d/s = 2×10⁶ / 2×10⁸ = 10 ms
+  d_proc  = 1 µs
+  d_queue = değişken (trafik yoğunluğuna bağlı)
+```
+
+**INET Konfigürasyonu:**
+```ini
+# Channel parametreleri
+**.channel.datarate = 100Mbps     # Transmission delay hesabı için
+**.channel.delay = 10ms          # Propagation delay
+
+# Processing delay
+*.router.processingDelayLayer.delay = 1us
+```
+
+### 6.2 Queueing Delay ve Packet Loss
+
+Queueing delay, ağ trafiği yoğunluğuna (traffic intensity) bağlıdır:
+
+```
+Traffic Intensity = La/R
+
+L: Ortalama paket boyutu (bits)
+a: Paket varış hızı (packets/second)
+R: Link kapasitesi (bps)
+```
+
+**Traffic Intensity ve Delay İlişkisi:**
+
+```
+Traffic Intensity vs Queueing Delay:
+════════════════════════════════════
+
+  Delay
+    │
+    │                      ╱
+    │                     ╱
+    │                    ╱
+    │                   ╱
+    │                  ╱
+    │                ╱
+    │            ╱──
+    │        ╱──
+    │    ╱──
+    │╱──
+    └──────────────────────── Traffic Intensity
+    0                    1
+
+    La/R < 1  →  Düşük delay
+    La/R → 1  →  Delay sonsuza yaklaşır
+    La/R > 1  →  Kuyruk taşması, PAKET KAYBI
+```
+
+**INET'te Kuyruk Yönetimi:**
+
+```ini
+# Kuyruk kapasitesi ayarı
+*.router.ppp[*].queue.typename = "DropTailQueue"
+*.router.ppp[*].queue.packetCapacity = 100  # Max 100 paket
+
+# Kuyruk dolunca ne olur?
+# - DropTail: Son gelen paket düşürülür
+# - RED: Random Early Detection
+```
+
+**TSN'de Kuyruk Yönetimi:**
+
+TSN, trafik sınıflarına göre ayrı kuyruklar kullanır:
+
+```
+TSN Queue Architecture:
+═══════════════════════
+
+Incoming    ┌────────────┐
+Packets ───▶│ Classifier │ (PCP bazlı)
+            └─────┬──────┘
+       ┌──────────┼──────────┐
+       ▼          ▼          ▼
+    ┌─────┐   ┌─────┐    ┌─────┐
+    │ Q7  │   │ Q4  │    │ Q0  │  Priority Queues
+    │(BE) │   │(AV) │    │(Ctrl)│
+    └──┬──┘   └──┬──┘    └──┬──┘
+       │         │          │
+    ┌──▼──┐   ┌──▼──┐    ┌──▼──┐
+    │Gate7│   │Gate4│    │Gate0│  TAS Gates
+    └──┬──┘   └──┬──┘    └──┬──┘
+       └────┬────┴────┬─────┘
+            │         │
+         Scheduler → PHY
+```
+
+### 6.3 End-to-End Delay
+
+Uçtan uca gecikme, tüm hop'ların gecikmelerinin toplamıdır:
+
+```
+d_end-to-end = Σ(d_proc + d_queue + d_trans + d_prop)
+               i=1 to N
+```
+
+**INET'te End-to-End Delay Ölçümü:**
+
+```ned
+// NED dosyasında istatistik tanımı
+simple MyApp {
+    @statistic[endToEndDelay](
+        source=messageAge(packetReceived);
+        record=mean,max,histogram,vector;
+        unit=s
+    );
+}
+```
+
+```ini
+# omnetpp.ini'de kayıt
+**.scalar-recording = true
+**.vector-recording = true
+```
+
+### 6.4 Throughput
+
+Throughput, birim zamanda başarıyla iletilen veri miktarıdır:
+
+```
+Instantaneous Throughput = (Received bits) / (Time interval)
+Average Throughput = (Total bits received) / (Total time)
+```
+
+**Bottleneck Link:**
+
+```
+End-to-End Throughput:
+═════════════════════
+
+Source ───[10 Mbps]───R1───[1 Mbps]───R2───[10 Mbps]───Dest
+                           ▲
+                   Bottleneck Link
+                   
+End-to-end throughput = min(all link rates) = 1 Mbps
+```
+
+**INET'te Throughput İstatistikleri:**
+
+```cpp
+// Paket alımında throughput hesaplama
+void UdpSink::processPacket(Packet *packet) {
+    totalBitsReceived += packet->getBitLength();
+    simtime_t now = simTime();
+    
+    double throughput = totalBitsReceived / (now - startTime);
+    emit(throughputSignal, throughput);
+}
+```
+
+---
+
+## 7. Protokol Katmanları ve Servis Modelleri
+
+### 7.1 Neden Katmanlı Mimari?
+
+Ağ protokollerinin karmaşıklığını yönetmek için **katmanlı mimari** kullanılır. Her katman:
+- Alt katmanın servislerini kullanır
+- Üst katmana servis sunar
+- İç detaylarını gizler (abstraction)
+
+### 7.2 OSI vs TCP/IP Modeli
+
+```
+OSI 7-Katman Modeli    TCP/IP Modeli         INET Implementasyonu
+═══════════════════    ═════════════         ════════════════════
+
+┌──────────────────┐   ┌──────────────────┐  ┌───────────────────────┐
+│  7. Application  │   │                  │  │ applications/         │
+├──────────────────┤   │                  │  │ - httptools/          │
+│  6. Presentation │   │   Application    │  │ - voip/               │
+├──────────────────┤   │                  │  │ - udpapp/             │
+│  5. Session      │   │                  │  │ - tcpapp/             │
+├──────────────────┤   └────────┬─────────┘  └───────────┬───────────┘
+│  4. Transport    │   ┌────────▼─────────┐  ┌───────────▼───────────┐
+│                  │   │    Transport     │  │ transportlayer/       │
+│                  │   │  (TCP, UDP)      │  │ - tcp/, udp/, sctp/   │
+├──────────────────┤   └────────┬─────────┘  └───────────┬───────────┘
+│  3. Network      │   ┌────────▼─────────┐  ┌───────────▼───────────┐
+│                  │   │    Internet      │  │ networklayer/         │
+│                  │   │  (IP, ICMP)      │  │ - ipv4/, ipv6/, arp/  │
+├──────────────────┤   └────────┬─────────┘  └───────────┬───────────┘
+│  2. Data Link    │   ┌────────▼─────────┐  ┌───────────▼───────────┐
+├──────────────────┤   │  Network Access  │  │ linklayer/            │
+│  1. Physical     │   │ (Ethernet, WiFi) │  │ - ethernet/, ieee80211│
+└──────────────────┘   └──────────────────┘  │ physicallayer/        │
+                                             └───────────────────────┘
+```
+
+### 7.3 Katman Detayları ve INET Modülleri
+
+| Katman | Protokol Örnekleri | INET Modülü | Sorumluluğu |
+|--------|-------------------|-------------|-------------|
+| **Application** | HTTP, DNS, SMTP | `UdpBasicApp`, `TcpApp` | Kullanıcı uygulamaları |
+| **Transport** | TCP, UDP, SCTP | `Tcp`, `Udp`, `Sctp` | Uçtan uca iletim |
+| **Network** | IP, ICMP, OSPF, BGP | `Ipv4`, `Icmp`, `Ospf` | Routing, addressing |
+| **Link** | Ethernet, WiFi | `EthernetMac`, `Ieee80211Mac` | Hop-by-hop iletim |
+| **Physical** | Kablo, Radyo | `EthernetPhy`, `Radio` | Bit iletimi |
+
+### 7.4 Encapsulation (Kapsülleme)
+
+Her katman kendi header'ını ekler:
+
+```
+Encapsulation Süreci:
+═════════════════════
+
+APPLICATION LAYER:
+    ┌────────────────────────────────────┐
+    │              DATA                  │
+    └────────────────────────────────────┘
+
+TRANSPORT LAYER:
+    ┌────────┬───────────────────────────┐
+    │TCP/UDP │           DATA            │
+    │ Header │                           │
+    └────────┴───────────────────────────┘
+         Segment (TCP) / Datagram (UDP)
+
+NETWORK LAYER:
+    ┌────────┬────────┬──────────────────┐
+    │   IP   │TCP/UDP │      DATA        │
+    │ Header │ Header │                  │
+    └────────┴────────┴──────────────────┘
+                  IP Datagram
+
+LINK LAYER:
+    ┌─────┬────────┬────────┬──────┬─────┐
+    │ Eth │   IP   │TCP/UDP │ DATA │ FCS │
+    │ Hdr │ Header │ Header │      │     │
+    └─────┴────────┴────────┴──────┴─────┘
+                Ethernet Frame
+```
+
+**INET'te Encapsulation:**
+
+```cpp
+// Uygulama katmanında paket oluşturma
+auto payload = makeShared<BytesChunk>(data, dataLen);
+Packet *packet = new Packet("appData");
+packet->insertAtBack(payload);
+
+// Transport katmanında header ekleme
+auto udpHeader = makeShared<UdpHeader>();
+udpHeader->setSourcePort(srcPort);
+udpHeader->setDestinationPort(destPort);
+packet->insertAtFront(udpHeader);
+
+// Network katmanında header ekleme
+auto ipHeader = makeShared<Ipv4Header>();
+ipHeader->setSrcAddress(srcAddr);
+ipHeader->setDestAddress(destAddr);
+packet->insertAtFront(ipHeader);
+
+// Link katmanında header ekleme
+auto ethHeader = makeShared<EthernetMacHeader>();
+ethHeader->setSrc(srcMac);
+ethHeader->setDest(destMac);
+packet->insertAtFront(ethHeader);
+```
+
+### 7.5 TSN'de Ek Katmanlar
+
+TSN, standart Ethernet'e ek katmanlar ekler:
+
+```
+TSN Genişletilmiş Katman Yapısı:
+════════════════════════════════
+
+┌───────────────────────────────────────┐
+│          Application Layer            │
+├───────────────────────────────────────┤
+│          Transport Layer              │
+├───────────────────────────────────────┤
+│          Network Layer (IP)           │
+├───────────────────────────────────────┤
+│     ╔═══════════════════════════╗     │
+│     ║    BRIDGING LAYER (TSN)   ║     │  ← TSN Eklentisi
+│     ║ • Stream Identifier       ║     │
+│     ║ • Stream Relay (FRER)     ║     │
+│     ║ • Stream Filter (PSFP)    ║     │
+│     ║ • Stream Coder            ║     │
+│     ╚═══════════════════════════╝     │
+├───────────────────────────────────────┤
+│     ╔═══════════════════════════╗     │
+│     ║   PROTOCOL LAYERS (Tags)  ║     │  ← TSN Tags
+│     ║ • R-TAG (802.1CB)         ║     │
+│     ║ • C-TAG (802.1Q VLAN)     ║     │
+│     ╚═══════════════════════════╝     │
+├───────────────────────────────────────┤
+│          MAC Layer                    │
+│  • TAS (802.1Qbv) - Time-Aware Shaper │
+│  • CBS (802.1Qav) - Credit-Based      │
+│  • Preemption (802.1Qbu)              │
+├───────────────────────────────────────┤
+│          Physical Layer               │
+└───────────────────────────────────────┘
+```
+
+---
+
+## 8. INET Dizin Yapısı
+
+```
+inet-4.5.4/
+├── src/inet/                    # Ana kaynak kodları
+│   ├── applications/            # Uygulama katmanı
+│   │   ├── httptools/           # HTTP client/server
+│   │   ├── udpapp/              # UDP uygulamaları
+│   │   ├── tcpapp/              # TCP uygulamaları
+│   │   ├── voip/                # VoIP simülasyonu
+│   │   └── pingapp/             # ICMP ping
+│   │
+│   ├── transportlayer/          # Taşıma katmanı
+│   │   ├── tcp/                 # TCP implementasyonu
+│   │   ├── udp/                 # UDP implementasyonu
+│   │   ├── sctp/                # SCTP
+│   │   └── rtp/                 # Real-time Transport
+│   │
+│   ├── networklayer/            # Ağ katmanı
+│   │   ├── ipv4/                # IPv4
+│   │   ├── ipv6/                # IPv6
+│   │   ├── arp/                 # Address Resolution
+│   │   ├── icmpv6/              # ICMPv6
+│   │   ├── diffserv/            # QoS - DiffServ
+│   │   └── mpls/                # MPLS label switching
+│   │
+│   ├── routing/                 # Routing protokolleri
+│   │   ├── ospfv2/              # OSPF version 2
+│   │   ├── bgpv4/               # BGP version 4
+│   │   ├── rip/                 # RIP
+│   │   └── aodv/                # Ad-hoc routing
+│   │
+│   ├── linklayer/               # Veri bağlantı katmanı
+│   │   ├── ethernet/            # Ethernet MAC/PHY
+│   │   ├── ieee80211/           # WiFi
+│   │   ├── ieee8021q/           # VLAN, TAS, CBS
+│   │   ├── ieee8021r/           # FRER
+│   │   ├── ieee8021as/          # gPTP zaman senkronizasyonu
+│   │   └── ppp/                 # Point-to-Point
+│   │
+│   ├── physicallayer/           # Fiziksel katman
+│   │   ├── wired/               # Kablolu ortam
+│   │   └── wireless/            # Kablosuz ortam
+│   │
+│   ├── node/                    # Hazır node tipleri
+│   │   ├── inet/                # StandardHost, Router
+│   │   ├── ethernet/            # EthernetSwitch
+│   │   └── tsn/                 # TsnDevice, TsnSwitch
+│   │
+│   ├── queueing/                # Kuyruk yönetimi
+│   │   ├── queue/               # Queue modülleri
+│   │   ├── gate/                # PeriodicGate (TAS)
+│   │   ├── scheduler/           # Priority Scheduler
+│   │   └── meter/               # Token bucket
+│   │
+│   └── protocolelement/         # TSN protokol elemanları
+│       ├── redundancy/          # FRER splitter/merger
+│       └── shaper/              # Traffic shapers
+│
+├── examples/                    # Temel örnekler
+├── showcases/                   # Gelişmiş demo'lar
+│   └── tsn/                     # TSN showcase'leri
+├── tutorials/                   # Eğitim materyalleri
+└── doc/                         # Dokümantasyon
+```
+
+---
+
+## 9. Uygulama Katmanı Protokolleri
+
+Bu bölümde temel uygulama katmanı protokollerini ve INET implementasyonlarını inceleyeceğiz.
+
+### 9.1 Client-Server ve P2P Mimarisi
+
+**INET'te İki Model:**
+
+| Model | Açıklama | INET Örneği |
+|-------|----------|-------------|
+| **Client-Server** | Merkezi sunucu, çok istemci | `TcpBasicClientApp` + `TcpGenericServerApp` |
+| **Peer-to-Peer** | Eşler arası iletişim | Her node hem client hem server |
+
+### 9.2 HTTP ve Web Protokolleri
+
+**HTTP İsteği Akışı:**
+
+```
+HTTP Request/Response (INET HttpBrowser/HttpServer):
+═══════════════════════════════════════════════════
+
+    Browser (Client)                         Server
+         │                                      │
+         │───── GET /index.html HTTP/1.1 ──────▶│
+         │      Host: www.example.com           │
+         │                                      │
+         │◀──── HTTP/1.1 200 OK ────────────────│
+         │      Content-Type: text/html         │
+         │      <html>...</html>                │
+         │                                      │
+```
+
+**INET'te HTTP Konfigürasyonu:**
+
+```ini
+# HTTP Client
+*.client.numApps = 1
+*.client.app[0].typename = "HttpBrowser"
+*.client.app[0].httpBrowserController.config = xmldoc("browse.xml")
+
+# HTTP Server
+*.server.numApps = 1
+*.server.app[0].typename = "HttpServer"
+*.server.app[0].hostName = "www.example.com"
+*.server.app[0].port = 80
+```
+
+### 9.3 DNS (Domain Name System)
+
+**DNS Çözümleme Süreci:**
+
+```
+DNS Resolution:
+═══════════════
+
+Client              Local DNS           Root DNS        TLD DNS         Auth DNS
+  │                    │                   │               │               │
+  │ www.google.com?   │                   │               │               │
+  │───────────────────▶│                   │               │               │
+  │                    │ .com DNS?         │               │               │
+  │                    │──────────────────▶│               │               │
+  │                    │◀──────────────────│               │               │
+  │                    │                   │               │               │
+  │                    │ google.com DNS?   │               │               │
+  │                    │──────────────────────────────────▶│               │
+  │                    │◀──────────────────────────────────│               │
+  │                    │                   │               │               │
+  │                    │ www.google.com IP?│               │               │
+  │                    │────────────────────────────────────────────────▶ │
+  │                    │◀────────────────────────────────────────────────│
+  │                    │                   │               │               │
+  │ IP: 142.250.x.x    │                   │               │               │
+  │◀───────────────────│                   │               │               │
+```
+
+### 9.4 Socket Programlama
+
+**INET Socket API:**
+
+```cpp
+// UDP Socket örneği
+UdpSocket socket;
+socket.bind(localPort);
+socket.connect(L3Address(destIP), destPort);
+
+Packet *packet = new Packet("data");
+packet->insertAtBack(makeShared<BytesChunk>(data, len));
+socket.send(packet);
+
+// TCP Socket örneği
+TcpSocket socket;
+socket.connect(L3Address(serverIP), serverPort);
+
+// Veri gönderimi
+Packet *packet = new Packet("request");
+socket.send(packet);
+```
+
+---
+
+## 10. Taşıma Katmanı Temelleri
+
+### 10.1 Multiplexing ve Demultiplexing
+
+Port numaraları ile çoklu uygulamaları ayırt etme:
+
+```
+Multiplexing/Demultiplexing:
+════════════════════════════
+
+     Host A                               Host B
+┌─────────────────┐                ┌─────────────────┐
+│ App1    App2    │                │ App3    App4    │
+│ :5000   :5001   │                │ :80     :443    │
+└───┬───────┬─────┘                └───┬───────┬─────┘
+    │       │                          │       │
+    └───┬───┘                          └───┬───┘
+        │ Multiplexing                     │ Demultiplexing
+        ▼                                  ▼
+┌───────────────────────────────────────────────────┐
+│              Transport Layer                       │
+│  Segment: [SrcPort:5000 | DstPort:80 | Data]      │
+└───────────────────────────────────────────────────┘
+```
+
+**INET'te Port Yönetimi:**
+
+```cpp
+// UDP'de port binding
+Udp::bind(L3Address localAddr, int localPort) {
+    SocketDescriptor *sd = new SocketDescriptor();
+    sd->localAddr = localAddr;
+    sd->localPort = localPort;
+    socketMap.insert(sd);
+}
+
+// Demultiplexing: Gelen paket için doğru socket'i bul
+SocketDescriptor* Udp::findSocketFor(Packet *packet) {
+    auto udpHeader = packet->peekAtFront<UdpHeader>();
+    return socketMap.find(udpHeader->getDestinationPort());
+}
+```
+
+### 10.2 UDP (User Datagram Protocol)
+
+**UDP Segment Yapısı:**
+
+```
+UDP Header (8 bytes):
+┌───────────────────────────────────────────────────┐
+│ Source Port (16 bits) │ Dest Port (16 bits)       │
+├───────────────────────┼───────────────────────────┤
+│    Length (16 bits)   │   Checksum (16 bits)      │
+└───────────────────────┴───────────────────────────┘
+```
+
+**INET UDP Modülü:**
+
+```ini
+# UDP Konfigürasyonu
+*.host.hasUdp = true
+*.host.app[0].typename = "UdpBasicApp"
+*.host.app[0].destAddresses = "server"
+*.host.app[0].destPort = 5000
+*.host.app[0].messageLength = 1000B
+*.host.app[0].sendInterval = 100ms
+```
+
+### 10.3 TCP (Transmission Control Protocol)
+
+**TCP Özellikleri:**
+
+| Özellik | Açıklama | INET Parametresi |
+|---------|----------|------------------|
+| Connection-oriented | 3-way handshake | Otomatik |
+| Reliable | Retransmission | `tcpAlgorithmClass` |
+| Flow Control | Receiver window | `advertisedWindow` |
+| Congestion Control | cwnd yönetimi | `tcpType` (Reno, NewReno) |
+
+**TCP Segment Yapısı:**
+
+```
+TCP Header (20-60 bytes):
+┌─────────────────────────────────────────────────────────────┐
+│ Source Port (16)        │ Destination Port (16)            │
+├─────────────────────────┴───────────────────────────────────┤
+│                    Sequence Number (32)                      │
+├──────────────────────────────────────────────────────────────┤
+│                 Acknowledgment Number (32)                   │
+├──────┬───────┬──────────────────────┬───────────────────────┤
+│Offset│Reserv │ Flags (SYN,ACK,FIN) │    Window (16)        │
+│ (4)  │ (6)   │        (6)          │                        │
+├──────┴───────┴──────────────────────┼───────────────────────┤
+│        Checksum (16)                │   Urgent Ptr (16)     │
+├─────────────────────────────────────┴───────────────────────┤
+│                     Options (variable)                       │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### 10.4 TCP Congestion Control
+
+**INET'te TCP Congestion Control Varyantları:**
+
+| Varyant | INET Sınıfı | Özellik |
+|---------|-------------|---------|
+| Tahoe | `TcpTahoe` | Slow start, congestion avoidance |
+| Reno | `TcpReno` | + Fast retransmit, fast recovery |
+| NewReno | `TcpNewReno` | Improved fast recovery |
+| Vegas | `TcpVegas` | RTT-based congestion control |
+| Westwood | `TcpWestwood` | Bandwidth estimation |
+
+**Congestion Control Görselleştirmesi:**
+
+```
+TCP Congestion Window (cwnd) Evrimi:
+════════════════════════════════════
+
+cwnd
+  │     ╱\                      ╱\
+  │    ╱  \                    ╱  \
+  │   ╱    \    Packet        ╱    \
+  │  ╱      \    Loss        ╱      \
+  │ ╱        \  ──▶         ╱        \
+  │╱ Slow     \ cwnd/2     ╱ Congestion\
+  │  Start     \          ╱  Avoidance  \
+  └────────────────────────────────────────▶ time
+     Exponential    Linear        Exponential
+     Growth         Growth        Growth
+
+ssthresh = cwnd/2 after loss
+```
+
+**INET Konfigürasyonu:**
+
+```ini
+# TCP varyantı seçimi
+**.tcp.typename = "Tcp"
+**.tcp.tcpAlgorithmClass = "TcpNewReno"
+**.tcp.sackSupport = true
+
+# TCP parametreleri
+**.tcp.mss = 1460
+**.tcp.windowScalingSupport = true
+**.tcp.advertisedWindow = 65535
+```
+
+### 10.5 TSN'de Transport Katmanı
+
+TSN, transport katmanını doğrudan etkilemez ancak alt katmanda sağladığı garantiler transport davranışını iyileştirir:
+
+| TSN Etkisi | Transport Üzerinde |
+|------------|-------------------|
+| Bounded delay | RTT tahminleri daha doğru |
+| Zero loss | TCP retransmit azalır |
+| Low jitter | RTP buffer'ları küçülebilir |
+
+---
+
+## 11. Ağ Katmanı - Data Plane
+
+### 11.1 Forwarding vs Routing
+
+| Kavram | Tanım | INET Modülü |
+|--------|-------|-------------|
+| **Forwarding** | Paketi input→output port'a aktarma | `Ipv4` |
+| **Routing** | Forwarding tablosunu oluşturma | `Ospf`, `Bgp` |
+
+```
+Data Plane vs Control Plane:
+════════════════════════════
+
+┌─────────────────────────────────────────────────────────────┐
+│                      CONTROL PLANE                           │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │          Routing Protocols (OSPF, BGP, RIP)         │    │
+│  │  • Routing table oluşturma                          │    │
+│  │  • Network topology keşfi                           │    │
+│  └────────────────────────┬────────────────────────────┘    │
+│                           │ Routing Table                    │
+│                           ▼                                  │
+├─────────────────────────────────────────────────────────────┤
+│                       DATA PLANE                             │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │              IP Forwarding Engine                    │    │
+│  │  • Longest prefix match                             │    │
+│  │  • TTL decrement                                    │    │
+│  │  • Header checksum update                           │    │
+│  └─────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 11.2 IPv4 Datagram Yapısı
+
+```
+IPv4 Header (20-60 bytes):
+┌──────────────────────────────────────────────────────────────┐
+│Version│ IHL │   DSCP   │ECN│       Total Length             │
+│  (4)  │ (4) │   (6)    │(2)│           (16)                 │
+├───────┴─────┴──────────┴───┴───────────────────────────────┬┤
+│        Identification (16)      │Flags(3)│ Fragment Off(13)││
+├─────────────────────────────────┴────────┴──────────────────┤
+│    TTL (8)   │  Protocol (8)   │    Header Checksum (16)     │
+├──────────────┴─────────────────┴────────────────────────────┤
+│                   Source IP Address (32)                     │
+├──────────────────────────────────────────────────────────────┤
+│                 Destination IP Address (32)                  │
+├──────────────────────────────────────────────────────────────┤
+│                      Options (variable)                      │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**INET'te IPv4:**
+
+```cpp
+// IPv4 header oluşturma (Ipv4.cc)
+void Ipv4::encapsulate(Packet *packet, const InterfaceEntry *destIE) {
+    auto ipv4Header = makeShared<Ipv4Header>();
+    ipv4Header->setVersion(4);
+    ipv4Header->setHeaderLength(IP_HEADER_BYTES);
+    ipv4Header->setTotalLengthField(B(packet->getByteLength()));
+    ipv4Header->setTimeToLive(defaultTTL);
+    ipv4Header->setProtocol(IP_PROT_UDP);  // veya TCP
+    ipv4Header->setSrcAddress(srcAddr);
+    ipv4Header->setDestAddress(destAddr);
+    
+    packet->insertAtFront(ipv4Header);
+}
+```
+
+### 11.3 IP Addressing ve Subnetting
+
+```
+IPv4 Adres Yapısı:
+══════════════════
+
+192.168.1.100/24
+
+IP Adresi:  192.168.1.100 = 11000000.10101000.00000001.01100100
+Subnet:     /24           = 11111111.11111111.11111111.00000000
+                            ├─────── Network ───────┤├─ Host ─┤
+
+Network Address: 192.168.1.0
+Broadcast:       192.168.1.255
+Usable range:    192.168.1.1 - 192.168.1.254
+```
+
+**INET'te IP Konfigürasyonu:**
+
+```ini
+# Manuel IP atama
+*.host.ipv4.arp.typename = "GlobalArp"
+*.host.numEthInterfaces = 1
+*.host.eth[0].address = "192.168.1.10"
+*.host.eth[0].netmask = "255.255.255.0"
+
+# Otomatik IP atama (Configurator)
+*.configurator.config = xml("<config>
+    <interface hosts='**' address='10.x.x.x' netmask='255.x.x.x'/>
+</config>")
+```
+
+### 11.4 NAT (Network Address Translation)
+
+```
+NAT İşlemi:
+═══════════
+
+Private Network        NAT Router         Public Internet
+192.168.1.0/24         203.0.113.1
+
+┌─────────────┐        ┌─────────────┐        ┌─────────────┐
+│   Host A    │        │    NAT      │        │   Server    │
+│192.168.1.10 │────────│   Router    │────────│ 8.8.8.8     │
+└─────────────┘        └─────────────┘        └─────────────┘
+
+Outgoing Packet:
+  Before NAT: Src=192.168.1.10:5000, Dst=8.8.8.8:80
+  After NAT:  Src=203.0.113.1:45000, Dst=8.8.8.8:80
+
+NAT Table:
+┌──────────────────────┬─────────────────────┐
+│ Internal             │ External            │
+├──────────────────────┼─────────────────────┤
+│ 192.168.1.10:5000    │ 203.0.113.1:45000   │
+│ 192.168.1.11:5001    │ 203.0.113.1:45001   │
+└──────────────────────┴─────────────────────┘
+```
+
+### 11.5 SDN ve OpenFlow
+
+**SDN Kavramı:**
+
+```
+Geleneksel vs SDN:
+══════════════════
+
+Geleneksel:                    SDN:
+                              ┌─────────────────┐
+                              │  SDN Controller │
+                              │   (Centralized) │
+                              └────────┬────────┘
+                                       │ OpenFlow
+┌───────────┐                 ┌────────▼────────┐
+│ Control   │                 │                 │
+│   +       │                 │   Data Plane    │
+│ Data Plane│                 │    (Switches)   │
+└───────────┘                 └─────────────────┘
+  Per-device                    Centralized control
+  distributed                   Programmable
+```
+
+**INET'te SDN Benzeri Yapılar:**
+
+TSN'de match-action prensibi, SDN OpenFlow ile benzerlik gösterir:
+
+| OpenFlow | TSN INET Karşılığı |
+|----------|-------------------|
+| Match (header fields) | Stream Identifier (filter) |
+| Action (forward, drop) | Stream Relay (replicate, merge) |
+| Flow table | GCL (Gate Control List) |
+
+---
+
+## 12. Ağ Katmanı - Control Plane
+
+### 12.1 Routing Algoritmaları
+
+İki temel yaklaşım:
+
+| Algoritma | Çalışma Prensibi | INET Örneği |
+|-----------|-----------------|-------------|
+| **Link-State** | Tüm topolojiyi bilir, Dijkstra | OSPF |
+| **Distance-Vector** | Sadece komşu bilgileri, Bellman-Ford | RIP |
+
+### 12.2 OSPF (Open Shortest Path First)
+
+**OSPF Özellikleri:**
+
+```
+OSPF Area Yapısı:
+═════════════════
+
+              ┌───────────────────┐
+              │    Backbone       │
+              │     Area 0        │
+              │                   │
+              │  ┌───┐    ┌───┐  │
+              │  │ABR│    │ABR│  │  ABR: Area Border Router
+              └──┴─┬─┴────┴─┬─┴──┘
+                   │        │
+          ┌────────┘        └────────┐
+          │                          │
+    ┌─────▼─────┐              ┌─────▼─────┐
+    │  Area 1   │              │  Area 2   │
+    │           │              │           │
+    │ Internal  │              │ Internal  │
+    │ Routers   │              │ Routers   │
+    └───────────┘              └───────────┘
+```
+
+**INET'te OSPF Konfigürasyonu:**
+
+```ini
+# OSPF etkinleştirme
+*.router*.hasOspf = true
+*.router*.ospf.ospfConfig = xmldoc("ospfConfig.xml")
+```
+
+```xml
+<!-- ospfConfig.xml -->
+<OSPFASConfig>
+    <Area id="0.0.0.0">
+        <AddressRange>
+            <Address>10.0.0.0</Address>
+            <Mask>255.255.0.0</Mask>
+            <Status>Advertise</Status>
+        </AddressRange>
+    </Area>
+</OSPFASConfig>
+```
+
+### 12.3 BGP (Border Gateway Protocol)
+
+**BGP Kullanım Alanı:**
+
+```
+Inter-AS Routing:
+═════════════════
+
+    ┌─────────────────┐          ┌─────────────────┐
+    │      AS 100     │          │      AS 200     │
+    │   (ISP 1)       │          │   (ISP 2)       │
+    │                 │   eBGP   │                 │
+    │  ┌───┐   ┌───┐  │◀───────▶│  ┌───┐   ┌───┐  │
+    │  │ R1│───│ R2│──│──────────│──│ R3│───│ R4│  │
+    │  └───┘   └───┘  │          │  └───┘   └───┘  │
+    │     iBGP ▲      │          │      ▲ iBGP    │
+    │          │      │          │      │         │
+    └──────────│──────┘          └──────│─────────┘
+               │                        │
+         OSPF/IS-IS                OSPF/IS-IS
+         (Intra-AS)                (Intra-AS)
+```
+
+### 12.4 ICMP (Internet Control Message Protocol)
+
+**ICMP Mesaj Türleri:**
+
+| Type | Mesaj | INET Kullanımı |
+|------|-------|----------------|
+| 0 | Echo Reply | Ping yanıtı |
+| 3 | Destination Unreachable | No route |
+| 8 | Echo Request | Ping isteği |
+| 11 | Time Exceeded | TTL=0, traceroute |
+
+**INET'te Ping:**
+
+```ini
+*.client.numApps = 1
+*.client.app[0].typename = "PingApp"
+*.client.app[0].destAddr = "server"
+*.client.app[0].startTime = 1s
+*.client.app[0].sendInterval = 1s
+*.client.app[0].count = 10
+```
+
+---
+
+## 13. Link Layer ve LAN'lar
+
+### 13.1 Error Detection
+
+**CRC (Cyclic Redundancy Check):**
+
+```
+CRC-32 Hesaplama:
+═════════════════
+
+Data bits:    1101001...
+Generator:    100110...  (CRC-32 polynomial)
+
+          Data × 2^r
+CRC = ────────────── mod Generator
+          Generator
+
+Ethernet FCS: 32-bit CRC eklenir frame sonuna
+```
+
+**INET'te FCS:**
+
+```cpp
+// EthernetFcs.cc
+uint32_t calculateFcs(const Ptr<const Chunk>& data) {
+    // CRC-32 hesaplama
+    return crc32(data->getBytes());
+}
+```
+
+### 13.2 Multiple Access Protocols
+
+**CSMA/CD (Ethernet):**
+
+```
+CSMA/CD Algoritması:
+════════════════════
+
+1. Frame hazır
+       │
+       ▼
+2. Channel boş mu? ────NO────▶ Bekle
+       │YES
+       ▼
+3. İletimi başlat
+       │
+       ▼
+4. Çarpışma var mı? ───YES───▶ Jam signal gönder
+       │NO                     │
+       ▼                       ▼
+5. İletim tamamlandı    Binary exponential backoff
+                              │
+                              └──────▶ 2'ye dön
+```
+
+### 13.3 Ethernet Frame Yapısı
+
+```
+Ethernet Frame:
+═══════════════
+
+┌─────────┬─────┬───────┬───────┬──────────┬──────────────┬─────┐
+│Preamble │ SFD │ Dest  │ Source│Type/Len  │    Payload   │ FCS │
+│ 7 bytes │1byte│ MAC   │  MAC  │ 2 bytes  │  46-1500     │4byte│
+│         │     │6 bytes│6 bytes│          │   bytes      │     │
+└─────────┴─────┴───────┴───────┴──────────┴──────────────┴─────┘
+         │                                                      │
+         └────────── Minimum 64 bytes, Max 1518 bytes ─────────┘
+         
+With VLAN (802.1Q): Max 1522 bytes (4 byte VLAN tag eklenir)
+```
+
+### 13.4 ARP (Address Resolution Protocol)
+
+```
+ARP Resolution:
+═══════════════
+
+Host A (10.0.0.1)          Switch              Host B (10.0.0.2)
+     │                        │                      │
+     │ ARP Request (Broadcast)│                      │
+     │ "Who has 10.0.0.2?"    │                      │
+     │───────────────────────▶│──────────────────────▶│
+     │                        │                      │
+     │                        │   ARP Reply (Unicast)│
+     │                        │   "10.0.0.2 is at    │
+     │◀──────────────────────────────────────────────│
+     │                        │    AA:BB:CC:DD:EE:FF"│
+     │                        │                      │
+     │ ARP Cache updated:     │                      │
+     │ 10.0.0.2 → AA:BB:...   │                      │
+```
+
+**INET'te ARP:**
+
+```ini
+# ARP modu seçimi
+*.host.ipv4.arp.typename = "Arp"          # Normal ARP
+# veya
+*.host.ipv4.arp.typename = "GlobalArp"    # Anında çözümleme (simülasyon hızı)
+```
+
+### 13.5 Switches ve VLANs
+
+**Switch MAC Learning:**
+
+```
+MAC Address Table:
+══════════════════
+
+┌────────────────────┬──────┐
+│     MAC Address    │ Port │
+├────────────────────┼──────┤
+│ AA:BB:CC:11:22:33  │  1   │
+│ DD:EE:FF:44:55:66  │  2   │
+│ 11:22:33:44:55:66  │  3   │
+└────────────────────┴──────┘
+
+Unknown MAC → Flood to all ports (except source)
+Known MAC   → Forward to specific port
+```
+
+**VLAN Kavramı:**
+
+```
+VLAN Segmentasyonu:
+═══════════════════
+
+Physical Switch:                  Logical View:
+
+ ┌─────────────────┐             ┌─────────┐  ┌─────────┐
+ │    Switch       │             │ VLAN 10 │  │ VLAN 20 │
+ │ ┌───┬───┬───┐   │             │ (Sales) │  │  (Eng)  │
+ │ │P1 │P2 │P3 │P4 │   ────▶     │ ┌─┬─┐   │  │ ┌─┬─┐   │
+ │ └───┴───┴───┴───┘   │         │ │1│2│   │  │ │3│4│   │
+ └─────────────────────┘         │ └─┴─┘   │  │ └─┴─┘   │
+                                 └─────────┘  └─────────┘
+                                 Ayrı broadcast domain'ler
+```
+
+**INET'te VLAN:**
+
+```ini
+# VLAN konfigürasyonu
+*.switch.hasVlan = true
+*.switch.eth[0].vlanId = 10
+*.switch.eth[1].vlanId = 10
+*.switch.eth[2].vlanId = 20
+*.switch.eth[3].vlanId = 20
+```
+
+---
+
+## 14. Kablosuz ve Mobil Ağlar
+
+### 14.1 Kablosuz Link Özellikleri
+
+| Özellik | Kablolu | Kablosuz |
+|---------|---------|----------|
+| Signal attenuation | Düşük | Mesafe ile artar |
+| Interference | Yok | Diğer cihazlar |
+| Multipath | Yok | Yansımalar |
+| Hidden terminal | Yok | Var |
+
+### 14.2 IEEE 802.11 (WiFi)
+
+**802.11 Mimarisi:**
+
+```
+WiFi BSS (Basic Service Set):
+═════════════════════════════
+
+     ┌─────────────────────────────────────┐
+     │            BSS Coverage             │
+     │                                     │
+     │    ┌──────┐     ┌─────────┐        │
+     │    │ STA1 │ ◀──▶│   AP    │◀─────▶ İnternet
+     │    └──────┘     │(Access  │        │
+     │                 │ Point)  │        │
+     │    ┌──────┐     └─────────┘        │
+     │    │ STA2 │ ◀──▶      ▲            │
+     │    └──────┘           │            │
+     │                  ┌────┴───┐        │
+     │                  │  STA3  │        │
+     │                  └────────┘        │
+     └─────────────────────────────────────┘
+     
+STA: Station (kablosuz cihaz)
+AP: Access Point (bağlantı noktası)
+```
+
+**INET'te WiFi:**
+
+```ini
+# WiFi host
+*.host.wlan[*].typename = "Ieee80211Interface"
+*.host.wlan[*].radio.transmitter.power = 20mW
+*.host.wlan[*].mac.dcf.channelAccess.pendingQueue.packetCapacity = 100
+
+# Access Point
+*.ap.wlan[*].mgmt.typename = "Ieee80211MgmtAp"
+*.ap.wlan[*].mgmt.ssid = "MyNetwork"
+```
+
+### 14.3 802.11 MAC: CSMA/CA
+
+```
+CSMA/CA with RTS/CTS:
+═════════════════════
+
+Sender              Receiver
+  │                    │
+  │──────RTS──────────▶│  Request to Send
+  │                    │
+  │◀─────CTS───────────│  Clear to Send
+  │                    │
+  │═══════DATA════════▶│
+  │                    │
+  │◀─────ACK───────────│
+```
+
+---
+
+## 15. Time-Sensitive Networking (TSN)
+
+TSN, geleneksel Ethernet'i deterministik, düşük gecikmeli ve yüksek güvenilirlikli iletişim için genişleten IEEE 802.1 standartlar kümesidir.
+
+### 15.1 TSN Neden Gerekli?
+
+**Geleneksel Ethernet Sınırlamaları:**
+
+| Özellik | Best-Effort Ethernet | TSN |
+|---------|---------------------|-----|
+| Gecikme | Değişken, tahmin edilemez | Sınırlı (bounded), garantili |
+| Jitter | Yüksek | Düşük |
+| Güvenilirlik | Paket kaybı olabilir | FRER ile sıfır kayıp |
+| Önceliklendirme | Basit priority queues | TAS ile garantili zaman dilimleri |
+
+### 15.2 TSN Uygulama Alanları
+
+```
+TSN Kullanım Alanları ve INET Desteği:
+══════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────┐
+│                     ENDÜSTRİYEL OTOMASYON                       │
+│  • Robot kontrolü (<1 ms gecikme)                               │
+│  • PLC senkronizasyonu                                          │
+│  • Sensör-aktüatör ağları                                       │
+│  INET: TsnDevice, TsnSwitch, TAS, FRER                         │
+├─────────────────────────────────────────────────────────────────┤
+│                        OTOMOTİV                                  │
+│  • ADAS (Advanced Driver Assistance)                            │
+│  • In-vehicle networking                                        │
+│  • Drive-by-wire sistemleri                                     │
+│  INET: Preemption, CBS, gPTP                                    │
+├─────────────────────────────────────────────────────────────────┤
+│                     SES/VİDEO (AVB)                              │
+│  • Pro-audio canlı performans                                   │
+│  • Video prodüksiyon                                            │
+│  • Broadcast sistemleri                                         │
+│  INET: CBS (802.1Qav), RTP                                      │
+├─────────────────────────────────────────────────────────────────┤
+│                        5G/TELEKOM                                │
+│  • Fronthaul/backhaul ağları                                    │
+│  • eCPRI                                                        │
+│  INET: gPTP, TAS                                                │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 15.3 TSN Standartları Özeti
+
+| Standart | İsim | Amaç | INET Modülü |
+|----------|------|------|-------------|
+| **802.1AS** | gPTP | Zaman senkronizasyonu | `Gptp` |
+| **802.1Qbv** | TAS | Time-Aware Shaping | `PeriodicGate` |
+| **802.1Qav** | CBS | Credit-Based Shaping | `Ieee8021qCreditBasedGate` |
+| **802.1CB** | FRER | Frame Replication | `StreamSplitter`, `StreamMerger` |
+| **802.1Qci** | PSFP | Stream Filtering | `StreamFilter` |
+| **802.1Qbu** | FPE | Frame Preemption | `EthernetPreemptingMacLayer` |
+
+### 15.4 TSN Temel Kavramları
+
+#### VLAN ve Ethernet Tag'leri
+
+**C-TAG (IEEE 802.1Q):**
 - 4 byte ek başlık
-- TPID (Tag Protocol Identifier): 0x8100
-- PCP (Priority Code Point): 3 bit (0-7 öncelik)
-- DEI (Drop Eligible Indicator): 1 bit
-- VID (VLAN Identifier): 12 bit
-- Single tagging için kullanılır
+- TPID: 0x8100
+- PCP (Priority): 3 bit (0-7)
+- VID (VLAN ID): 12 bit
 
-**S-TAG (Service TAG - IEEE 802.1ad / QinQ)**
-- Provider bridges için kullanılır
-- TPID: 0x88A8
-- C-TAG'in üzerine eklenir (double tagging)
-- Service provider ağlarında müşteri trafiğini ayırmak için
-- Nested VLAN desteği
-
-**R-TAG (Redundancy TAG - IEEE 802.1CB)**
-- FRER (Frame Replication and Elimination for Reliability) için kullanılır
+**R-TAG (IEEE 802.1CB):**
 - 6 byte ek başlık
 - TPID: 0xF1C1
-- Sequence Number: Duplicate frame elimination için
-- Stream identification bilgisi taşır
-- Güvenilirlik ve yedeklilik mekanizmaları için kritik
+- Sequence Number: 16 bit (FRER için)
 
-#### 2.1.5 Priority Code Point (PCP)
-
-**PCP Değerleri ve Trafik Sınıfları**
+#### Priority Code Point (PCP)
 
 | PCP | Öncelik | Trafik Türü | Kullanım |
 |-----|---------|-------------|----------|
@@ -2684,9 +4203,17 @@ ZAMAN   OLAY
 
 ---
 
-## 8. Modül Tipleri
+## 20. Modül Tipleri ve Konfigürasyon
 
-Bu bölümde INET Framework'te kullanılan modül türlerini ve dosya tiplerini inceleyeceğiz.
+### 20.1 INET Modül Türleri
+
+| Modül Tipi | Açıklama | Örnek |
+|------------|----------|-------|
+| **Simple** | Temel iş mantığı | `Tcp`, `Udp`, `Ipv4` |
+| **Compound** | Birden fazla modül içerir | `StandardHost`, `TsnSwitch` |
+| **Network** | Topoloji tanımı | Simülasyon senaryosu |
+
+### 20.2 Initialization Stages
 
 | Stage | Açıklama |
 |-------|----------|
@@ -2699,22 +4226,82 @@ Bu bölümde INET Framework'te kullanılan modül türlerini ve dosya tiplerini 
 | `INITSTAGE_TRANSPORT_LAYER` | Taşıma katmanı |
 | `INITSTAGE_APPLICATION_LAYER` | Uygulama katmanı |
 
+### 20.3 omnetpp.ini Yapısı
+
+```ini
+[General]
+network = MyNetwork
+sim-time-limit = 100s
+
+# Ağ konfigürasyonu
+*.configurator.typename = "Ipv4NetworkConfigurator"
+
+# Host ayarları
+*.host.numApps = 1
+*.host.app[0].typename = "UdpBasicApp"
+
+# İstatistik kaydı
+**.scalar-recording = true
+**.vector-recording = true
+```
+
 ---
 
-## 12. Yararlı Kaynaklar
+## 21. Signal ve İstatistik Mekanizması
 
-1. **INET User's Guide**: https://inet.omnetpp.org/docs/users-guide/
-2. **INET Developer's Guide**: https://inet.omnetpp.org/docs/developers-guide/
-3. **TSN Showcases**: `showcases/tsn/` dizini
-4. **Tutorials**: `tutorials/` dizini
-5. **API Reference**: `doc/` dizini
+### 21.1 Signal Tanımlama
+
+```cpp
+// Header dosyasında (.h)
+static simsignal_t packetSentSignal;
+static simsignal_t delaySignal;
+
+// Source dosyasında (.cc)
+simsignal_t MyModule::packetSentSignal = registerSignal("packetSent");
+simsignal_t MyModule::delaySignal = registerSignal("delay");
+
+// Kullanım
+emit(packetSentSignal, packet);
+emit(delaySignal, simTime() - packet->getCreationTime());
+```
+
+### 21.2 İstatistik Kayıt
+
+```ned
+simple MyModule {
+    @signal[packetSent](type=cPacket);
+    @signal[delay](type=simtime_t);
+    
+    @statistic[packetCount](
+        source=count(packetSent);
+        record=last,vector
+    );
+    @statistic[avgDelay](
+        source=delay;
+        record=mean,max,histogram,vector;
+        unit=s
+    );
+}
+```
+
+---
+
+## 22. Yararlı Kaynaklar
+
+| Kaynak | URL/Konum |
+|--------|-----------|
+| INET User's Guide | https://inet.omnetpp.org/docs/users-guide/ |
+| INET Developer's Guide | https://inet.omnetpp.org/docs/developers-guide/ |
+| TSN Showcases | `showcases/tsn/` dizini |
+| Tutorials | `tutorials/` dizini |
+| API Reference | `doc/` dizini |
 
 ---
 
 ## Özet Tablo: TSN Özellikleri
 
-| Özellik | Standart | Amaç | Parametre |
-|---------|----------|------|-----------|
+| Özellik | Standart | Amaç | INET Parametre |
+|---------|----------|------|----------------|
 | Time Sync | 802.1AS | Saat senkronizasyonu | `hasTimeSynchronization` |
 | TAS | 802.1Qbv | Garantili gecikme | `hasEgressTrafficShaping` |
 | CBS | 802.1Qav | AVB streaming | `hasEgressTrafficShaping` |
@@ -2725,5 +4312,20 @@ Bu bölümde INET Framework'te kullanılan modül türlerini ve dosya tiplerini 
 
 ---
 
+## Özet Tablo: Ağ Katmanları ve INET
+
+| Katman | Teori Konuları | INET Modülleri |
+|--------|----------------|----------------|
+| **Application** | HTTP, DNS, Socket | `applications/` |
+| **Transport** | TCP/UDP, Congestion Control | `transportlayer/` |
+| **Network** | IP, Routing (OSPF, BGP) | `networklayer/`, `routing/` |
+| **Link** | Ethernet, VLAN, ARP | `linklayer/` |
+| **Physical** | Wired, Wireless | `physicallayer/` |
+| **TSN** | 802.1AS/Qbv/Qav/CB/Qci/Qbu | `ieee8021*/`, `queueing/` |
+
+---
+
 *Bu döküman, INET Framework 4.5.4 sürümü için hazırlanmıştır.*
+*Network Teorisi ile INET implementasyonlarını birleştiren kapsamlı bir kılavuzdur.*
 *Son Güncelleme: Ocak 2026*
+

@@ -2,6 +2,16 @@
 
 Bu proje, OMNeT++ simülasyon ortamı ve INET Framework kullanılarak geliştirilmiş Time-Sensitive Networking (TSN) ağ simülasyonlarını içermektedir.
 
+## 📘 INET Kapsamlı Rehber (Başlangıç Noktası)
+
+👉 Buradan başlayın: **[INET_GUIDE.md](INET_GUIDE.md)**
+
+Bu rehber aşağıdaki konuları yapılandırılmış bir biçimde açıklamaktadır:
+- Ağ temelleri
+- INET framework mimarisi
+- Protokol yığını (protocol stack) eşlemesi
+- Zaman Duyarlı Ağlar (Time-Sensitive Networking – TSN) mekanizmaları
+
 ## 📋 İçindekiler
 
 - [Genel Bakış](#genel-bakış)
@@ -21,10 +31,10 @@ Bu workspace, INET Framework 4.5.4 kullanılarak geliştirilmiş TSN (Time-Sensi
 ### Özellikler
 
 - **TSN Desteği**: IEEE 802.1 standartlarına uygun Time-Sensitive Networking simülasyonları
-- **Otomotiv Senaryosu**: Araç içi ağ (in-vehicle network) simülasyonu
+- **Otomotiv Senaryosu**: Araç içi ağ (in-vehicle network) simülasyonu (car, large_car)
 - **Endüstriyel Senaryo**: Endüstriyel otomasyon ağ simülasyonu
 - **Stream Coding**: TSN akış tanımlama ve kodlama
-- **Traffic Shaping**: Credit-Based Shaper (CBS) ve Time-Aware Shaper (TAS) desteği
+- **Traffic Shaping**: Credit-Based Shaper (CBS) - AVB Class A ve Class B desteği
 - **Zaman Senkronizasyonu**: gPTP (IEEE 802.1AS) desteği
 
 ## 📦 Gereksinimler
@@ -52,9 +62,12 @@ inet-workspace/
 │   ├── car/
 │   │   ├── car.ned            # Otomotiv ağ topolojisi
 │   │   └── omnetpp.ini        # Otomotiv simülasyon konfigürasyonu
-│   └── industrial/
-│       ├── industrial.ned     # Endüstriyel ağ topolojisi
-│       └── omnetpp.ini        # Endüstriyel simülasyon konfigürasyonu
+│   ├── industrial/
+│   │   ├── industrial.ned     # Endüstriyel ağ topolojisi
+│   │   └── omnetpp.ini        # Endüstriyel simülasyon konfigürasyonu
+│   └── large_car/
+│       ├── large_car.ned      # Büyük otomotiv ağ topolojisi
+│       └── omnetpp.ini        # Büyük otomotiv simülasyon konfigürasyonu
 ├── src/                        # Kaynak kod dosyaları (şu an boş)
 ├── out/                        # Derleme çıktıları
 ├── Makefile                    # Build konfigürasyonu
@@ -110,11 +123,15 @@ Derleme başarılı olduğunda, `out/clang-release/` dizininde `inet-workspace.e
 
 # Endüstriyel simülasyonu
 ./inet-workspace -f simulations/industrial/omnetpp.ini
+
+# Büyük otomotiv simülasyonu
+./inet-workspace -f simulations/large_car/omnetpp.ini
 ```
 
 Windows'ta:
 ```cmd
 inet-workspace.exe -f simulations/car/omnetpp.ini
+inet-workspace.exe -f simulations/large_car/omnetpp.ini
 ```
 
 ## 🎮 Mevcut Simülasyonlar
@@ -132,10 +149,19 @@ Bu simülasyon, bir otomobil içindeki TSN ağını modellemektedir.
 - 31 farklı stream (S1-S31)
 - Stream tanımlama ve kodlama
 - Credit-Based Shaper (CBS) ile trafik şekillendirme
-- Priority Code Point (PCP) = 5 (Class A) kullanımı
+- AVB Class A (PCP=5, idleSlope=600Mbps) ve Class B (PCP=4, idleSlope=150Mbps) desteği
+- S29, S30, S31: Class B trafiği
 - PCAP kayıt desteği
 
 **Simülasyon Süresi**: 15 saniye
+
+**Referanslar:** Bu topoloji ve akış detayları aşağıdaki yayınlarda tanımlanmıştır:
+- [1] G. Patti, L. Lo Bello, "Performance assessment of the IEEE 802.1Q in automotive applications", AEIT Automotive, 2019.
+- [2] L. Leonardi, L. Lo Bello, G. Patti, "Performance assessment of the IEEE 802.1Qch in an automotive scenario", AEIT Automotive, 2020.
+- [3] L. Lo Bello, M. Ashjaei, G. Patti, M. Behnam, "Schedulability analysis of Time-Sensitive Networks with scheduled traffic and preemption support", IEEE Access, 2021.
+- [4] M. Topsakal, S. Cevher, D. Ergenç, "A Machine Learning-Based Intrusion Detection Framework with Labeled Dataset Generation for IEEE 802.1 Time-Sensitive Networking", Journal of Systems Architecture, Vol. 164, 2025.
+- [5] S. Cevher, M. Topsakal, Ö. K. Demir, "Delay Analysis of IEEE 802.1BA Audio Video Bridging Networks: Recent Advances and Evaluation of Realistic Industrial Communication Use Cases", IJERAD, Vol. 17, Issue 2, pp. 383-402, 2025.
+- [6] M. Topsakal, S. Cevher, "Cyber Security for IEEE 802.1 Time Sensitive In-Vehicle Networking: Recent Advances and Impact Analysis of DoS Attacks", Dokuz Eylül Üniversitesi Mühendislik Fakültesi Fen ve Mühendislik Dergisi, 2024.
 
 ### 2. Endüstriyel Ağ Simülasyonu (`simulations/industrial/`)
 
@@ -155,6 +181,37 @@ Bu simülasyon, endüstriyel otomasyon sistemlerindeki TSN ağını modellemekte
 - Clock drift simülasyonu
 
 **Simülasyon Süresi**: 15 saniye
+
+**Referanslar:** Bu topoloji ve akış detayları aşağıdaki yayınlarda tanımlanmıştır:
+- [1] M. Ashjaei, G. Patti, M. Behnam, T. Nolte, G. Alderisi, L. Lo Bello, "Schedulability analysis of Ethernet Audio Video Bridging networks with scheduled traffic support", Real-Time Systems, 2017.
+- [2] S. Cevher, M. Topsakal, Ö. K. Demir, "Delay Analysis of IEEE 802.1BA Audio Video Bridging Networks: Recent Advances and Evaluation of Realistic Industrial Communication Use Cases", IJERAD, Vol. 17, Issue 2, pp. 383-402, 2025.
+
+### 3. Büyük Otomotiv Ağ Simülasyonu (`simulations/large_car/`)
+
+Bu simülasyon, daha karmaşık bir araç içi TSN ağını modellemektedir. CoRE4INET'ten INET'e dönüştürülmüştür.
+
+**Ağ Topolojisi:**
+- **Kontrol Üniteleri**: VCC1, VCC2, VCC3 (Vehicle Control Computer)
+- **Aktüatörler**: BrakeAct1-3 (Fren), WinAct1-3 (Cam)
+- **Sensörler**: Cam1-4 (Kamera), Radar1-2, Lidar
+- **Multimedya**: Video, Audio1-3
+- **Kontrol**: FLC (Front Left Controller), FRC (Front Right Controller), RC (Rear Controller)
+- **Anahtarlar**: Switch1-3, FrontLeftSwitch, FrontRightSwitch, RearSwitch, EndSwitch1-2
+- **Bağlantı Hızı**: 1 Gbps Ethernet
+
+**Özellikler:**
+- 17 farklı AVB stream (S1-S17)
+- Dağıtık switch topolojisi (8 switch)
+- Credit-Based Shaper (CBS) ile trafik şekillendirme
+- Priority Code Point (PCP) = 5 (Class A) kullanımı
+- Her stream için benzersiz port numarası (1001-1017)
+- Stream tanımlama: `has(udp) && udp.destPort == XXXX` formatı
+
+**Simülasyon Süresi**: 1 saniye
+
+**Referanslar:** Bu topoloji ve akış detayları aşağıdaki yayınlarda tanımlanmıştır:
+- [1] F. Luo, B. Wang, Z. Yang, P. Zhang, Y. Ma, Z. Fang, M. Wu, Z. Sun, "Design Methodology of Automotive Time-Sensitive Network System Based on OMNeT++ Simulation System", IEEE Access, 2019.
+- [2] M. Topsakal, S. Cevher, "Cyber Security for IEEE 802.1 Time Sensitive In-Vehicle Networking: Recent Advances and Impact Analysis of DoS Attacks", Dokuz Eylül Üniversitesi Mühendislik Fakültesi Fen ve Mühendislik Dergisi, 2024.
 
 ## ⚙️ Konfigürasyon
 
@@ -185,21 +242,41 @@ sim-time-limit = 15s
 ### Stream Tanımlama
 
 ```ini
+# has(udp) kontrolü ile ARP gibi UDP olmayan paketlerin filtrelenmesi
 *.Device.bridging.streamIdentifier.identifier.mapping = [
-    {stream: "S1 Talker", packetFilter: expr(udp.destPort == 1000)}
+    {stream: "S1 Talker", packetFilter: expr(has(udp) && udp.destPort == 1000)}
 ]
 *.Device.bridging.streamCoder.encoder.mapping = [
-    {stream: "S1 Talker", pcp: 5}
+    {stream: "S1 Talker", pcp: 5}  # Class A
 ]
 ```
 
 ### Traffic Shaping
 
 ```ini
-# Credit-Based Shaper
+# Credit-Based Shaper (tek sınıf - Class A)
 *.SW*.eth[*].macLayer.queue.transmissionSelectionAlgorithm[0].typename = "Ieee8021qCreditBasedShaper"
+*.SW*.eth[*].macLayer.queue.numTrafficClasses = 1
 *.SW*.eth[*].macLayer.queue.transmissionSelectionAlgorithm[0].idleSlope = 600Mbps
+
+# Credit-Based Shaper (iki sınıf - Class A + Class B)
+*.SW*.eth[*].macLayer.queue.transmissionSelectionAlgorithm[0].typename = "Ieee8021qCreditBasedShaper"
+*.SW*.eth[*].macLayer.queue.transmissionSelectionAlgorithm[1].typename = "Ieee8021qCreditBasedShaper"
+*.SW*.eth[*].macLayer.queue.numTrafficClasses = 2
+*.SW*.eth[*].macLayer.queue.*[0].display-name = "Class B"
+*.SW*.eth[*].macLayer.queue.*[1].display-name = "Class A"
+*.SW*.eth[*].macLayer.queue.transmissionSelectionAlgorithm[0].idleSlope = 150Mbps  # Class B
+*.SW*.eth[*].macLayer.queue.transmissionSelectionAlgorithm[1].idleSlope = 600Mbps  # Class A
 ```
+
+### PCP (Priority Code Point) Değerleri
+
+| Sınıf       | PCP | Açıklama                    |
+|-------------|-----|-----------------------------|
+| CDT         | 6   | Control Data Traffic        |
+| Class A     | 5   | AVB Class A (125µs period)  |
+| Class B     | 4   | AVB Class B (250µs period)  |
+| Best Effort | 0   | Önceliksiz trafik           |
 
 Daha detaylı konfigürasyon örnekleri için `simulations/car/omnetpp.ini` ve `simulations/industrial/omnetpp.ini` dosyalarına bakın.
 
@@ -268,7 +345,6 @@ Sorularınız veya önerileriniz için lütfen proje yöneticisi ile iletişime 
 
 ---
 
-**Son Güncelleme**: 2025
+**Son Güncelleme**: Ocak 2026
 **OMNeT++ Sürümü**: 6.3.0
 **INET Framework Sürümü**: 4.5.4
-
