@@ -1,0 +1,23 @@
+#
+# makefrag - Automatic extension module support
+# This file is automatically included by Makefile (-include makefrag)
+#
+# Includes extension module sources if present, does nothing otherwise.
+# This keeps modules optional and the main project clean.
+#
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# FRER SeqNum Spoofing Attack Module (optional)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Include sources if simulations/frer_seqnum_spoofing/src directory exists
+ifneq ($(wildcard simulations/frer_seqnum_spoofing/src),)
+    INCLUDE_PATH += -Isimulations/frer_seqnum_spoofing/src
+    OBJS += \
+        $O/simulations/frer_seqnum_spoofing/src/attack/queueing/sink/AttackPacketSink.o \
+        $O/simulations/frer_seqnum_spoofing/src/attack/queueing/source/SmartAttackerSource.o \
+        $O/simulations/frer_seqnum_spoofing/src/attack/queueing/source/SniffingSmartAttackerSource.o \
+        $O/simulations/frer_seqnum_spoofing/src/attack/redundancy/AttackStreamEncoder.o \
+        $O/simulations/frer_seqnum_spoofing/src/attack/redundancy/AttackStreamIdentifier.o \
+        $O/simulations/frer_seqnum_spoofing/src/attack/redundancy/AttackStreamSplitter.o
+    $(info [makefrag] FRER SeqNum Spoofing Attack module included)
+endif
