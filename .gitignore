@@ -25,9 +25,13 @@ Thumbs.db
 
 # OMNeT++ generated makefiles (isteğe bağlı)
 **/Makefile
+**/Makefile.*
 
 # OMNeT++ IDE generated
 .nedfolders
+
+# OMNeT++ Qtenv GUI ayarları (kullanıcıya özel)
+**/.qtenvrc
 
 # Private simulations
 simulations/frer_seqnum_spoofing/
