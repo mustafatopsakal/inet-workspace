@@ -98,13 +98,13 @@
 66. [Multi-Layer Network Design](#264-multi-layer-network-design)
 
 ### BÖLÜM XIII: DETERMİNİSTİK AĞLAR (TSN)
-67. [TSN Neden Gerekli?](#58-tsn-neden-gerekli)
-68. [IEEE 802.1AS (gPTP)](#59-ieee-8021as-gptp)
-69. [IEEE 802.1Qbv (TAS)](#60-ieee-8021qbv-tas)
-70. [IEEE 802.1Qav (CBS)](#61-ieee-8021qav-cbs)
-71. [IEEE 802.1CB (FRER)](#62-ieee-8021cb-frer)
-72. [IEEE 802.1Qci (PSFP)](#63-ieee-8021qci-psfp)
-73. [IEEE 802.1Qbu (Frame Preemption)](#64-ieee-8021qbu-frame-preemption)
+67. [TSN Neden Gerekli?](#161-tsn-neden-gerekli)
+68. [IEEE 802.1AS (gPTP)](#621-ieee-8021as---zaman-senkronizasyonu-gptp)
+69. [IEEE 802.1Qbv (TAS)](#622-ieee-8021qbv---time-aware-shaper-tas)
+70. [IEEE 802.1Qav (CBS)](#623-ieee-8021qav---credit-based-shaper-cbs)
+71. [IEEE 802.1CB (FRER)](#624-ieee-8021cb---frame-replication-and-elimination-for-reliability-frer)
+72. [IEEE 802.1Qci (PSFP)](#625-ieee-8021qci---per-stream-filtering-and-policing-psfp)
+73. [IEEE 802.1Qbu (Frame Preemption)](#626-ieee-8021qbu--8023br---frame-preemption)
 
 ### BÖLÜM XIV: QoS VE MULTIMEDIA
 74. [QoS Gereksinimleri](#65-qos-gereksinimleri)
@@ -116,9 +116,9 @@
 78. [End-to-End Paket Yolculuğu](#70-end-to-end-paket-yolculuğu)
 
 ### BÖLÜM XVI: INET PRATİK
-79. [Modül Tipleri ve Konfigürasyon](#71-modül-tipleri-ve-konfigürasyon)
-80. [Signal ve İstatistik Mekanizması](#72-signal-ve-istatistik-mekanizması)
-81. [Örnek Simülasyonlar](#73-örnek-simülasyonlar)
+79. [Modül Tipleri ve Konfigürasyon](#20-modül-tipleri-ve-konfigürasyon)
+80. [Signal ve İstatistik Mekanizması](#21-signal-ve-istatistik-mekanizması)
+81. [Örnek Simülasyonlar](#27-yararlı-kaynaklar)
 
 ---
 
@@ -1448,7 +1448,7 @@ INET'te fiziksel katman performansı şu istatistiklerle izlenebilir:
 
 Bu bölümde temel uygulama katmanı protokollerini ve INET implementasyonlarını inceleyeceğiz.
 
-### 9.1 Client-Server ve P2P Mimarisi
+### 14.1 Client-Server ve P2P Mimarisi
 
 **INET'te İki Model:**
 
@@ -1457,7 +1457,7 @@ Bu bölümde temel uygulama katmanı protokollerini ve INET implementasyonların
 | **Client-Server** | Merkezi sunucu, çok istemci | `TcpBasicClientApp` + `TcpGenericServerApp` |
 | **Peer-to-Peer** | Eşler arası iletişim | Her node hem client hem server |
 
-### 9.2 HTTP ve Web Protokolleri
+### 14.2 HTTP ve Web Protokolleri
 
 **HTTP İsteği Akışı:**
 
@@ -1491,7 +1491,7 @@ HTTP Request/Response (INET HttpBrowser/HttpServer):
 *.server.app[0].port = 80
 ```
 
-### 9.3 DNS (Domain Name System)
+### 14.3 DNS (Domain Name System)
 
 **DNS Çözümleme Süreci:**
 
@@ -1567,7 +1567,7 @@ Typical values:
   - CDN records: 60 (1 min)
 ```
 
-### 9.4 DHCP (Dynamic Host Configuration Protocol)
+### 14.4 DHCP (Dynamic Host Configuration Protocol)
 
 DHCP, ağ cihazlarına otomatik IP konfigürasyonu sağlar:
 
@@ -1658,7 +1658,7 @@ T2 = Lease Time × 0.875 (broadcast renewal)
 *.host.app[0].interface = "eth0"
 ```
 
-### 9.5 Socket Programlama
+### 14.5 Socket Programlama
 
 **INET Socket API:**
 
@@ -1681,11 +1681,11 @@ Packet *packet = new Packet("request");
 socket.send(packet);
 ```
 
-### 9.6 Video Streaming ve VoIP
+### 14.6 Video Streaming ve VoIP
 
 Bu bölüm, gerçek zamanlı ve streaming multimedya uygulamalarının temellerini, protokollerini ve INET implementasyonlarını kapsar.
 
-#### 9.6.1 Internet Video Özellikleri
+#### 14.6.1 Internet Video Özellikleri
 
 ```
 Video Streaming Karakteristikleri:
@@ -1710,7 +1710,7 @@ Video Frame Types (H.264/H.265):
 GOP (Group of Pictures): IBBPBBPBBPBBI...
 ```
 
-#### 9.6.2 HTTP Streaming ve DASH
+#### 14.6.2 HTTP Streaming ve DASH
 
 **HTTP Progressive Download vs Streaming:**
 
@@ -1796,7 +1796,7 @@ Client                  CDN Edge Server
 | **Tarayıcı desteği** | Chrome, Firefox | Safari, native iOS |
 | **Segment süresi** | 2-10 saniye | 6-10 saniye |
 
-#### 9.6.3 Content Delivery Networks (CDN)
+#### 14.6.3 Content Delivery Networks (CDN)
 
 ```
 CDN Architecture:
@@ -1845,7 +1845,7 @@ User → www.example.com → DNS
                     Edge Server
 ```
 
-#### 9.6.4 VoIP (Voice over IP) Gereksinimleri
+#### 14.6.4 VoIP (Voice over IP) Gereksinimleri
 
 ```
 VoIP QoS Requirements:
@@ -1880,7 +1880,7 @@ End-to-End Delay Components:
 | **iLBC** | 13.3/15.2 kbps | Good | Free |
 | **Speex** | 2.15-44 kbps | Good | Free |
 
-#### 9.6.5 INET'te VoIP ve Video Streaming Modülleri
+#### 14.6.5 INET'te VoIP ve Video Streaming Modülleri
 
 **VoIP Modülleri:**
 
@@ -2921,7 +2921,7 @@ Physical Switch:                  Logical View:
 *.switch.eth[3].vlanId = 20
 ```
 
-### 13.6 Spanning Tree Protocol (STP/RSTP)
+### 13.7 Spanning Tree Protocol (STP/RSTP)
 
 Switch'ler arasında döngülerin (loops) oluşmasını önlemek için Spanning Tree Protocol kullanılır.
 
@@ -3047,7 +3047,7 @@ BPDU Header Format:
 > [!NOTE]
 > INET 4.5.4'te STP/RSTP protokolü tam olarak implemente edilmemiştir. Simülasyonlarda döngü içermeyen topolojiler kullanılmalı veya manuel forwarding table konfigürasyonu yapılmalıdır.
 
-### 13.7 Error Detection ve Correction
+### 13.8 Error Detection ve Correction
 
 Data Link katmanında hata tespiti ve düzeltme mekanizmaları:
 
@@ -3158,7 +3158,7 @@ Code: 0 1 1 0 0 1 1
 
 ## 15. Kablosuz ve Mobil Ağlar
 
-### 14.1 Kablosuz Link Özellikleri
+### 15.1 Kablosuz Link Özellikleri
 
 | Özellik | Kablolu | Kablosuz |
 |---------|---------|----------|
@@ -3167,7 +3167,7 @@ Code: 0 1 1 0 0 1 1
 | Multipath | Yok | Yansımalar |
 | Hidden terminal | Yok | Var |
 
-### 14.2 IEEE 802.11 (WiFi)
+### 15.2 IEEE 802.11 (WiFi)
 
 **802.11 Mimarisi:**
 
@@ -3207,7 +3207,7 @@ AP: Access Point (bağlantı noktası)
 *.ap.wlan[*].mgmt.ssid = "MyNetwork"
 ```
 
-### 14.3 802.11 MAC: CSMA/CA
+### 15.3 802.11 MAC: CSMA/CA
 
 ```
 CSMA/CA with RTS/CTS:
@@ -3226,11 +3226,11 @@ Sender              Receiver
 
 ---
 
-## 15. Time-Sensitive Networking (TSN)
+## 16. Time-Sensitive Networking (TSN)
 
 TSN, geleneksel Ethernet'i deterministik, düşük gecikmeli ve yüksek güvenilirlikli iletişim için genişleten IEEE 802.1 standartlar kümesidir.
 
-### 15.1 TSN Neden Gerekli?
+### 16.1 TSN Neden Gerekli?
 
 **Geleneksel Ethernet Sınırlamaları:**
 
@@ -3241,7 +3241,7 @@ TSN, geleneksel Ethernet'i deterministik, düşük gecikmeli ve yüksek güvenil
 | Güvenilirlik | Paket kaybı olabilir | FRER ile sıfır kayıp |
 | Önceliklendirme | Basit priority queues | TAS ile garantili zaman dilimleri |
 
-### 15.2 TSN Uygulama Alanları
+### 16.2 TSN Uygulama Alanları
 
 ```
 TSN Kullanım Alanları ve INET Desteği:
@@ -3273,7 +3273,7 @@ TSN Kullanım Alanları ve INET Desteği:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 15.3 TSN Standartları Özeti
+### 16.3 TSN Standartları Özeti
 
 | Standart | İsim | Amaç | INET Modülü |
 |----------|------|------|-------------|
@@ -3284,7 +3284,7 @@ TSN Kullanım Alanları ve INET Desteği:
 | **802.1Qci** | PSFP | Stream Filtering | `StreamFilter` |
 | **802.1Qbu** | FPE | Frame Preemption | `EthernetPreemptingMacLayer` |
 
-### 15.4 TSN Temel Kavramları
+### 16.4 TSN Temel Kavramları
 
 #### VLAN ve Ethernet Tag'leri
 
@@ -3318,7 +3318,7 @@ TSN Kullanım Alanları ve INET Desteği:
 - Express traffic (PCP 6-7) genellikle preemptable trafikten ayrılır
 - Stream identification için kullanılır
 
-#### 2.1.6 Kuyruk (Queue) Kavramları
+#### 16.4.3 Kuyruk (Queue) Kavramları
 
 **Traffic Class (Trafik Sınıfı)**
 - Aynı QoS gereksinimlerine sahip paketlerin gruplanması
@@ -3342,7 +3342,7 @@ TSN Kullanım Alanları ve INET Desteği:
 - Tokens >= packet_size ise paket geçer
 - Burst traffic'e izin verir
 
-#### 2.1.7 Zaman Kavramları
+#### 16.4.4 Zaman Kavramları
 
 **Latency (Gecikme)**
 - Bir paketin kaynaktan hedefe ulaşma süresi
@@ -6653,7 +6653,7 @@ Arrives at switch:  t = 0.000038s (+0.00005 µs propagation)
 
 ### 7.3 TsnSwitch'te İşleme - Bridging ve Forwarding
 
-### 9.2 TsnSwitch'te İşleme (Detaylı)
+### 7.4 TsnSwitch'te İşleme (Detaylı)
 
 ```
 1. PHY LAYER (Giriş)
@@ -6701,7 +6701,7 @@ Arrives at switch:  t = 0.000038s (+0.00005 µs propagation)
    └── İletim
 ```
 
-### 9.3 Frame Preemption Senaryosu
+### 7.5 Frame Preemption Senaryosu
 
 ```
 ZAMAN   OLAY
