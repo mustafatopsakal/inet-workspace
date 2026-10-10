@@ -26,7 +26,9 @@ Bu rehber aşağıdaki konuları yapılandırılmış bir biçimde açıklamakta
 
 ## 🎯 Genel Bakış
 
-Bu workspace, INET Framework 4.5.4 kullanılarak geliştirilmiş TSN (Time-Sensitive Networking) ağ simülasyonlarını içerir. Proje, otomotiv ve endüstriyel ağ senaryolarını simüle etmek için tasarlanmıştır.
+Bu workspace, INET Framework ile geliştirilmiş TSN (Time-Sensitive Networking) ağ simülasyonlarını içerir. Proje, otomotiv ve endüstriyel ağ senaryolarını simüle etmek için tasarlanmıştır.
+
+> **Sürümler ve dallar:** `master` dalı güncel sürümdür (OMNeT++ 6.4.0 + INET 4.7.0). Yayımlanan makalede kullanılan sürüm (OMNeT++ 6.3.0 + INET 4.5.4) `inet-4.5.4` dalındadır; makaledeki sonuçları birebir yeniden üretmek için o dalı kullanın.
 
 ### Özellikler
 
@@ -41,8 +43,8 @@ Bu workspace, INET Framework 4.5.4 kullanılarak geliştirilmiş TSN (Time-Sensi
 
 ### Yazılım Gereksinimleri
 
-- **OMNeT++ 6.3.0** veya üzeri
-- **INET Framework 4.5.4**
+- **OMNeT++ 6.4.0** veya üzeri
+- **INET Framework 4.7.0** (makaledeki sürüm için `inet-4.5.4` dalı: OMNeT++ 6.3.0 + INET 4.5.4)
 - **C++ Derleyici** (GCC, Clang veya MSVC)
 - **Make** (Unix/Linux/Mac) veya **NMake** (Windows)
 
@@ -82,14 +84,14 @@ OMNeT++'ı [resmi web sitesinden](https://omnetpp.org/download) indirip kurun.
 
 ### 2. INET Framework Kurulumu
 
-INET Framework 4.5.4'ü indirip proje dizininin bir üst seviyesine (`../inet-4.5.4/`) yerleştirin:
+INET Framework 4.7.0'ı indirip proje dizininin bir üst seviyesine (`../inet-4.7.0/`) yerleştirin:
 
 ```bash
 # Örnek dizin yapısı:
-omnetpp-6.3.0/
-├── samples/
-│   └── inet-workspace/        # Bu proje
-└── inet-4.5.4/                # INET Framework
+omnetpp-6.4.0/
+└── samples/
+    ├── inet-workspace/        # Bu proje
+    └── inet-4.7.0/            # INET Framework
 ```
 
 ### 3. Proje Derleme
@@ -305,8 +307,8 @@ Proje içinde detaylı bir INET Framework kılavuzu bulunmaktadır:
 
 **Problem**: INET Framework bulunamıyor
 ```
-Çözüm: Makefile'daki İNET_4_5_4_PROJ yolunu kontrol edin. 
-INET Framework'ün ../inet-4.5.4/ konumunda olduğundan emin olun.
+Çözüm: Makefile'daki INET_4_7_0_PROJ yolunu kontrol edin.
+INET Framework'ün ../inet-4.7.0/ konumunda olduğundan emin olun.
 ```
 
 **Problem**: OMNeT++ bulunamıyor
@@ -327,6 +329,7 @@ INET Framework'ün ../inet-4.5.4/ konumunda olduğundan emin olun.
 - İstatistik toplama varsayılan olarak kapalıdır (`collectStatistics = false`)
 - PCAP kayıtları `results/` dizinine yazılır (etkinleştirildiğinde)
 - TSN özellikleri (time sync, traffic shaping) konfigürasyon dosyalarında etkinleştirilebilir/devre dışı bırakılabilir
+- INET 4.7.0'a geçişte `industrial` ve `large_car` yapılandırmalarında küçük uyarlamalar yapıldı (`crcMode` → `checksumMode`, gPTP için fiziksel katman ve zaman çözünürlüğü, osilatör `nominalTickLength`); gerekçeleri ilgili `omnetpp.ini` dosyalarındaki yorumlarda
 
 ## 📄 Lisans
 
@@ -345,6 +348,6 @@ Sorularınız veya önerileriniz için lütfen proje yöneticisi ile iletişime 
 
 ---
 
-**Son Güncelleme**: Ocak 2026
-**OMNeT++ Sürümü**: 6.3.0
-**INET Framework Sürümü**: 4.5.4
+**Son Güncelleme**: Ekim 2026
+**OMNeT++ Sürümü**: 6.4.0
+**INET Framework Sürümü**: 4.7.0
